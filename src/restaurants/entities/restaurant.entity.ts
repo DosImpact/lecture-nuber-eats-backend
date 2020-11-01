@@ -9,7 +9,15 @@ export class Restaurant {
     name: string;
 
     //해당 필드에 대해 데코레이팅 , null이어도 됨
-    @Field(type => Boolean, { nullable: true })
-    isGood?: boolean
+    // @Field(type => Boolean, { nullable: true })
+    // isGood?: boolean
+    @Field(type => Boolean)
+    isVegan: boolean;
+
+    @Field(type => String)
+    address: string;
+
+    @Field(type => String)
+    ownerName: string;
 
 }
