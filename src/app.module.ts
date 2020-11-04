@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RestaurantsModule } from './restaurants/restaurants.module';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
 
 
 @Module({
@@ -32,8 +33,9 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       "username": process.env.DB_USERNAME,
       "password": process.env.DB_PASSWORD,
       "database": process.env.DB_NAME,
-      "synchronize": true, // db연결과 동시에 model migration 실행
+      "synchronize": process.env.NODE_ENV !== 'prod', // db연결과 동시에 model migration 실행, 아래 entities가 들어간다.(!prod일때)
       "logging": true,
+      entities:[Restaurant]
     }),
     RestaurantsModule,],
   controllers: [],
