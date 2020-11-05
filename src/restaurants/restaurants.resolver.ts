@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql"
 import { CreateRestaurantDto } from "./dtos/create-restaurant.dto";
 import { CreateRestaurantInputDto } from "./dtos/create-restaurantInput.dto";
+import { UpdateRestaurantInputType } from "./dtos/update-restaurant.dto";
 import { Restaurant } from "./entities/restaurant.entity";
 import { RestaurantsService } from "./restaurants.service";
 
@@ -9,6 +10,8 @@ import { RestaurantsService } from "./restaurants.service";
 export class RestaurantResolver {
 
     constructor(private readonly restaurantService:RestaurantsService){}
+
+
 
     // 간단한 리소버
     @Query(returns => Boolean)
@@ -20,6 +23,9 @@ export class RestaurantResolver {
     restaurants(): Promise<Restaurant[]> { //Promise 리턴타입
         return this.restaurantService.getAll();
     }
+
+
+
 
     @Mutation(returns => Boolean)
     createRestaurantWithArgs(
@@ -56,5 +62,13 @@ export class RestaurantResolver {
             console.log(error);
             return false;
         }
+    }
+    //UpdateRestaurantInputDto 은 partialtype으로 CreateDTO를 받아서 id는 따로 인자로 받아야한다.
+    @Mutation(returns => Boolean)
+    async updateRestaurant(
+        @Args('id') id:number,
+        @Args('data') data:UpdateRestaurantInputType
+    ){
+        return true;
     }
 }

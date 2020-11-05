@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
-import { IsBoolean, IsString, Length } from "class-validator";
+import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @InputType({isAbstract:true}) // Object타입을 메인으로 사용하는데, mappedType을 사용하기 위해 InputType이 필요해서,abstract함
@@ -21,24 +21,25 @@ export class Restaurant {
     // @Field(type => Boolean, { nullable: true })
     // isGood?: boolean
 
-    @Column()
-    @Field(type => Boolean)
+    @Column({default:true})                     // DB에 들어갈때 디폴트값
+    @Field(type => Boolean,{nullable:true}) //{defaultValue:true} , {nullable:true} 
+    @IsOptional()
     @IsBoolean()
-    isVegan: boolean;
+    isVegan?: boolean;
 
     @Column()
-    @Field(type => String)
+    @Field(type => String,{defaultValue:"주소를 입력해주세요"})
     @IsString()
     address: string;
 
-    @Column()
-    @Field(type => String)
-    @IsString()
-    ownerName: string;
+    // @Column()
+    // @Field(type => String)
+    // @IsString()
+    // ownerName: string;
 
-    @Column()
-    @Field(type => String)
-    @IsString()
-    categoryName:string;
+    // @Column()
+    // @Field(type => String)
+    // @IsString()
+    // categoryName:string;
 
 }

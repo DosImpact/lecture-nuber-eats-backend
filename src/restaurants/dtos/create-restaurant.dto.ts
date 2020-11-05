@@ -19,8 +19,8 @@ export class CreateRestaurantDto {
     @IsString()
     address: string;
 
-    @Field(type => String)
-    @IsString()
-    @Length(5, 10)
-    ownerName: string;
+    // @Field(type => String)
+    // @IsString()
+    // @Length(5, 10)
+    // ownerName: string;
 }
