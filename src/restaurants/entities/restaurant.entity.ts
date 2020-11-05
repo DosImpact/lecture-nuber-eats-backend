@@ -1,7 +1,8 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, InputType, ObjectType } from "@nestjs/graphql";
+import { IsBoolean, IsString, Length } from "class-validator";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-
+@InputType({isAbstract:true}) // Object타입을 메인으로 사용하는데, mappedType을 사용하기 위해 InputType이 필요해서,abstract함
 @ObjectType()   // gprahql 에서 oject 스키마를 정의하고 싶다.
 @Entity()       // Entity 를 정의하므로써 typeORM의 모델을 정의한다. 이둘을 결합이 가능
 export class Restaurant {
@@ -10,27 +11,34 @@ export class Restaurant {
     @Field(type => Number)
     id: number;
 
+    @Column()               //TypeORM 의 컬럼
     @Field(type => String)  //Graphql Object의 필드
-    @Column()       //TypeORM 의 컬럼
+    @IsString()             // DTO Check
+    @Length(5)
     name: string;
 
     //해당 필드에 대해 데코레이팅 , null이어도 됨
     // @Field(type => Boolean, { nullable: true })
     // isGood?: boolean
-    @Field(type => Boolean)
+
     @Column()
+    @Field(type => Boolean)
+    @IsBoolean()
     isVegan: boolean;
 
-    @Field(type => String)
     @Column()
+    @Field(type => String)
+    @IsString()
     address: string;
 
-    @Field(type => String)
     @Column()
+    @Field(type => String)
+    @IsString()
     ownerName: string;
 
-    @Field(type => String)
     @Column()
+    @Field(type => String)
+    @IsString()
     categoryName:string;
 
 }

@@ -33,16 +33,28 @@ export class RestaurantResolver {
 
 
     @Mutation(returns => Boolean)
-    createRestaurantWithInputType(
+    async createRestaurantWithInputType(
         @Args('CreateRestaurantInputDto') CreateRestaurantInputDto: CreateRestaurantInputDto
-    ): boolean {
-        return true
+    ): Promise<boolean> {
+        try {
+            await this.restaurantService.createRestaurant(CreateRestaurantInputDto);
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
     }
 
     @Mutation(returns => Boolean)
-    createRestaurant(
+    async createRestaurant(
         @Args() createRestaurantDto: CreateRestaurantDto
-    ): boolean {
-        return true
+    ): Promise<boolean> {
+        try {
+            await this.restaurantService.createRestaurant(createRestaurantDto);
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
     }
 }

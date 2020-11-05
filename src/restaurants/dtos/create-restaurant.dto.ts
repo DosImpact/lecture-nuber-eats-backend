@@ -2,7 +2,7 @@ import { ArgsType, Field } from "@nestjs/graphql";
 import { IsBoolean, IsString, Length } from "class-validator";
 
 
-// @InputType() // 인풋타입 : 하나의 인풋만 정의 가능 > ArgsType : 여러개 가능
+// @ArgsType() // class안의 내용물을 ... spread 한것처럼  args를 받는다., 
 @ArgsType()
 export class CreateRestaurantDto {
     @Field(type => String)
