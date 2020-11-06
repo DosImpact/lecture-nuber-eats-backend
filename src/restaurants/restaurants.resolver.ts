@@ -1,7 +1,8 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql"
+import { UpdateResult } from "typeorm";
 import { CreateRestaurantDto } from "./dtos/create-restaurant.dto";
 import { CreateRestaurantInputDto } from "./dtos/create-restaurantInput.dto";
-import { UpdateRestaurantInputType } from "./dtos/update-restaurant.dto";
+import { UpdateRestaurantDto, UpdateRestaurantInputType } from "./dtos/update-restaurant.dto";
 import { Restaurant } from "./entities/restaurant.entity";
 import { RestaurantsService } from "./restaurants.service";
 
@@ -65,10 +66,15 @@ export class RestaurantResolver {
     }
     //UpdateRestaurantInputDto 은 partialtype으로 CreateDTO를 받아서 id는 따로 인자로 받아야한다.
     @Mutation(returns => Boolean)
-    async updateRestaurant(
-        @Args('id') id:number,
-        @Args('data') data:UpdateRestaurantInputType
-    ){
+    async updateRestaurant(@Args('input') data:UpdateRestaurantDto){
+        try {
+            //UpdateResult { generatedMaps: [], raw: [], affected: 1 }
+            await this.restaurantService.updateRestaurant(data);
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+     
         return true;
     }
 }

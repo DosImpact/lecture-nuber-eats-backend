@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -37,7 +38,8 @@ import { Restaurant } from './restaurants/entities/restaurant.entity';
       "logging": true,
       entities:[Restaurant]
     }),
-    RestaurantsModule,],
+    RestaurantsModule,
+    UsersModule,],
   controllers: [],
   providers: [],
 })

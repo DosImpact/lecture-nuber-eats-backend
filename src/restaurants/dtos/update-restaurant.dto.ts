@@ -8,7 +8,8 @@ import { CreateRestaurantInputDto } from "./create-restaurantInput.dto";
 export class UpdateRestaurantInputType extends PartialType(CreateRestaurantInputDto) {
  
 }
-
+// 1.  CreateDTO를 PartialType으로 받아서, 전부 optional한 field로 UpdateRestaurantInputType 만들기
+// 2. id 가 있어야 update가 되므로, 아래 Field에 id를 추가해 새로운 클래스를 생성
 @InputType()
 export class UpdateRestaurantDto{
     @Field(type => Number)
