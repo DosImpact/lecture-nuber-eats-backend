@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
+import { User } from './users/entities/user.entity';
 
 
 @Module({
@@ -36,10 +38,11 @@ import { UsersModule } from './users/users.module';
       "database": process.env.DB_NAME,
       "synchronize": process.env.NODE_ENV !== 'prod', // db연결과 동시에 model migration 실행, 아래 entities가 들어간다.(!prod일때)
       "logging": true,
-      entities:[Restaurant]
+      entities:[Restaurant,User]
     }),
     RestaurantsModule,
-    UsersModule,],
+    UsersModule,
+    CommonModule,],
   controllers: [],
   providers: [],
 })
