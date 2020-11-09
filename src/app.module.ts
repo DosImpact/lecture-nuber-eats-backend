@@ -17,7 +17,8 @@ import { User } from './users/entities/user.entity';
       envFilePath: process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.test",
       ignoreEnvFile: process.env.NODE_ENV === 'prod', // 다른방법으로 env를 얻는다. heroku 설정등
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('dev', 'prod'),
+        NODE_ENV: Joi.string().valid('dev', 'prod', 'test'),
+        DB_TYPE: Joi.string().valid('postgres', 'mysql'),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(), // 처음에는 string으로 들어옴
         DB_USERNAME: Joi.string().required(),
@@ -38,7 +39,7 @@ import { User } from './users/entities/user.entity';
       "database": process.env.DB_NAME,
       "synchronize": process.env.NODE_ENV !== 'prod', // db연결과 동시에 model migration 실행, 아래 entities가 들어간다.(!prod일때)
       "logging": true,
-      entities:[Restaurant,User]
+      entities: [Restaurant, User]
     }),
     RestaurantsModule,
     UsersModule,
