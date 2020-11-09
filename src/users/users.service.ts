@@ -11,17 +11,18 @@ export class UsersService {
         private readonly users: Repository<User>
     ) { }
 
-    async createAccount({ email, password, role }: CreateAccountInput): Promise<string | undefined> {
+    async createAccount({ email, password, role }: CreateAccountInput): Promise<{ ok: boolean, error?: string }> {
         try {
             //check new User exist
             const exists: User = await this.users.findOne({ email });
             if (exists) {
-                return "email is already taken";
+                return { ok: false, error: "email is already taken" };
             } else {
                 await this.users.save(this.users.create({ email, password, role }));  // create User and hash the pwd
+                return { ok: true };
             }
         } catch (error) {
-            return "Could't create User"
+            return { ok: false, error: "Could't create User" };
         }
     }
 }
