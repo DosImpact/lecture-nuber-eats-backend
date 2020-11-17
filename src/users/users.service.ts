@@ -24,5 +24,5 @@ export class UsersService {
         } catch (error) {
             return { ok: false, error: "Could't create User" };
         }
-    }
+    } 
 }
