@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
 import { join } from 'path';
+import { JwtModule } from './jwt/jwt.module';
 
 
 @Module({
@@ -44,7 +45,8 @@ import { join } from 'path';
     }),
     RestaurantsModule,
     UsersModule,
-    CommonModule,],
+    CommonModule,
+    JwtModule,],
   controllers: [],
   providers: [],
 })
