@@ -51,6 +51,7 @@ export class User extends CoreEntity {
     }
 
     // User Entity에 CheckPassword 기능을 추가해 줬다.
+    // User 타입에서 사용가능, User Repo 타입이 아니다.!
     async checkPassword(aPassword: string): Promise<boolean> {
         try {
             const ok = await bcrypt.compare(aPassword, this.password);
