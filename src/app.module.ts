@@ -15,7 +15,7 @@ import { JwtModule } from './jwt/jwt.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true, // global로 설정된 모듈은, import에 넣을 필요없음
       envFilePath: process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.test",
       ignoreEnvFile: process.env.NODE_ENV === 'prod', // 다른방법으로 env를 얻는다. heroku 설정등
       validationSchema: Joi.object({
@@ -41,12 +41,15 @@ import { JwtModule } from './jwt/jwt.module';
       "database": process.env.DB_NAME,
       "synchronize": process.env.NODE_ENV !== 'prod', // db연결과 동시에 model migration 실행, 아래 entities가 들어간다.(!prod일때)
       "logging": true,
-      entities: [Restaurant, User]
+      entities: [Restaurant, User],
     }),
     RestaurantsModule,
     UsersModule,
     CommonModule,
-    JwtModule,],
+    JwtModule.forRoot({
+      privateKey: process.env.SECRET_KEY
+    })
+  ],
   controllers: [],
   providers: [],
 })
