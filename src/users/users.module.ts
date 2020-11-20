@@ -31,7 +31,8 @@ import { UsersService } from './users.service';
         // , ConfigService
         // , JwtService
     ],
-    providers: [UsersResolver, UsersService]
+    providers: [UsersResolver, UsersService],
+    exports:[UsersService]          // jwt middleware에서 사용하기 위해 exports를 해준다.
 })
 export class UsersModule { }
 

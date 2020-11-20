@@ -54,4 +54,7 @@ export class UsersService {
         }
         // JWT 생성해 주기
     }
+    async findById(id:number):Promise<User>{
+        return this.users.findOne({id});
+    }
 }
