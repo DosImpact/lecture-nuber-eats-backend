@@ -17,7 +17,7 @@ export class UsersService {
         // private readonly config: ConfigService,
         private readonly jwtService: JwtService
     ) {
-        jwtService.hello()
+        // jwtService.hello()
     }
 
     async createAccount({ email, password, role }: CreateAccountInput): Promise<{ ok: boolean, error?: string }> {
