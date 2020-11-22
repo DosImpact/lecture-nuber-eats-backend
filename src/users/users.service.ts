@@ -38,7 +38,7 @@ export class UsersService {
     async login({ email, password }: LoginInput): Promise<LoginOutput> {
         // 이메일에 해당하는 유저 찾기 , 없으면
         try {
-            const user: User = await this.users.findOne({ email });
+            const user: User = await this.users.findOne({ email }); // this.users ( Repo ) vs user (instance ) 
             if (!user) {
                 return { ok: false, error: "User not found" }
             }

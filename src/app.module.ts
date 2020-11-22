@@ -31,6 +31,7 @@ import { JwtMiddleWare } from './jwt/jwt.middleware';
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,//join(process.cwd(), 'src/schema.gql'),
+      context:({req})=> ({user:req['user']})
     }),
     TypeOrmModule.forRoot({
       "type": "postgres",
