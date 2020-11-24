@@ -1,4 +1,6 @@
+import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
@@ -34,7 +36,8 @@ export class UsersResolver {
             return { ok: false, error }
         }
     }
-
+    
+    @UseGuards(AuthGuard) // 해당 요청은 가드되어지고 있다. - req.user가 없으면 forbidden
     @Query(returns =>User)
     me(@Context() context){
         console.log("context",context.user);
