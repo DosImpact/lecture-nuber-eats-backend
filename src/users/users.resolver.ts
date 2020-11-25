@@ -40,7 +40,7 @@ export class UsersResolver {
     
     @UseGuards(AuthGuard) // 해당 요청은 가드되어지고 있다. - req.user가 없으면 forbidden
     @Query(returns =>User)
-    me(@Context() context,@AuthUser() authUser:User){
+    me(@AuthUser() authUser:User , @Context() context){
         // console.log("context",context.user);
         // return context['user']
         return authUser;
