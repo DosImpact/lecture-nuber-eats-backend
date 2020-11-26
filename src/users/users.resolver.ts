@@ -4,6 +4,7 @@ import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
+import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -38,11 +39,33 @@ export class UsersResolver {
         }
     }
     
+    // JWT 토큰을 활용해서, 현재 나를 얻어와 리턴하기 - Authentication
     @UseGuards(AuthGuard) // 해당 요청은 가드되어지고 있다. - req.user가 없으면 forbidden
     @Query(returns =>User)
     me(@AuthUser() authUser:User , @Context() context){
         // console.log("context",context.user);
         // return context['user']
         return authUser;
+    }
+
+    // 다른 유저의 Id를 통해 조회하기.
+    @UseGuards(AuthGuard)
+    @Query(returns => UserProfileOutput)
+    async userProfile(@Args() userProfileInput:UserProfileInput ):Promise<UserProfileOutput>{
+        try {
+            const user = await this.usersService.findById(userProfileInput.userId);
+            if(!user){
+                throw new Error();
+            }
+            return {
+                ok:true,
+                user
+            }
+        } catch (error) {
+            return {
+                ok:false,
+                error:`User Not Found : ${userProfileInput.userId}`
+            }
+        }
     }
 }
