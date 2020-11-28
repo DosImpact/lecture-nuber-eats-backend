@@ -14,9 +14,9 @@ export class Verification extends CoreEntity{
     @Field(type=>String)
     code:string;
 
-    @OneToOne(type=>User)
-    @JoinColumn()
-    user:User;
+    @OneToOne(type=>User,{onDelete:'CASCADE'})       // 1:1 relation + CASCADE 명확한 삭제
+    @JoinColumn()               // JoinColumn 필수
+    user:User;                  // User 타입
 
     @BeforeInsert()
     createCode():void{

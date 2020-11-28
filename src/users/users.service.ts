@@ -13,6 +13,7 @@ import { Verification } from "./entities/verification.entity";
 
 @Injectable()
 export class UsersService {
+
     constructor(
         @InjectRepository(User)
         private readonly users: Repository<User>,
@@ -43,7 +44,9 @@ export class UsersService {
     async login({ email, password }: LoginInput): Promise<LoginOutput> {
         // 이메일에 해당하는 유저 찾기 , 없으면
         try {
-            const user: User = await this.users.findOne({ email }); // this.users ( Repo ) vs user (instance ) 
+            const user: User = await this.users.findOne({ email },{
+                select:["password"]
+            }); // this.users ( Repo ) vs user (instance ) 
             if (!user) {
                 return { ok: false, error: "User not found" }
             }
@@ -67,8 +70,9 @@ export class UsersService {
     async editProfile(userId:number, { email, password }:EditProfileInput){
         // TypeORM의 update 는 raw SQL문을 날려서 상당히 빠르지만 존재성,JS @BeforeUpdate() 가 작동이 안된다.
         // return this.users.update(userId,{...editProfileInput})
-
         const user = await this.users.findOne({id:userId});
+        console.log(user);
+        
         if(email) {
             user.email = email;
             user.verified = false;
@@ -77,5 +81,22 @@ export class UsersService {
         if(password) user.password = password;
         return this.users.save(user);
     }
-    
+
+    async verifyEmail(code:string):Promise<boolean> {
+        // const verification = await this.verifications.findOne({code},{relations:["user"]})
+        // const verification = await this.verifications.findOne({code},{loadRelationIds:true})
+        try {
+            const verification = await this.verifications.findOne({code},{relations:["user"]} );
+            if(verification) {
+                verification.user.verified = true;
+                this.users.save(verification.user);
+                return true;
+            }
+            throw new Error();
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    }
+
 }
