@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleWare } from './jwt/jwt.middleware';
+import { Verification } from './users/entities/verification.entity';
 
 
 @Module({
@@ -41,7 +42,7 @@ import { JwtMiddleWare } from './jwt/jwt.middleware';
       "database": process.env.DB_NAME,
       "synchronize": process.env.NODE_ENV !== 'prod', // db연결과 동시에 model migration 실행, 아래 entities가 들어간다.(!prod일때)
       "logging": true,
-      entities: [Restaurant, User],
+      entities: [Restaurant, User,Verification],
     }),
     RestaurantsModule,
     UsersModule,
