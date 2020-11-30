@@ -76,6 +76,9 @@ export class UsersService {
         if(email) {
             user.email = email;
             user.verified = false;
+            // error : 기존의 verficiation이 제거되고 아래의 새로운 verification으로 대처되어야함.
+            const ver = await this.verifications.findOne({user},{relations:["user"]})
+            await this.verifications.delete(ver.id);
             await this.verifications.save(this.verifications.create({user}));
         }
         if(password) user.password = password;
@@ -89,7 +92,8 @@ export class UsersService {
             const verification = await this.verifications.findOne({code},{relations:["user"]} );
             if(verification) {
                 verification.user.verified = true;
-                this.users.save(verification.user);
+                await this.users.save(verification.user);
+                await this.verifications.delete(verification.id);
                 return true;
             }
             throw new Error();

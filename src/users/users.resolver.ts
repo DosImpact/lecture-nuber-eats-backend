@@ -23,12 +23,13 @@ export class UsersResolver {
 
     @Mutation(returns => CreateAccountOutput)
     async createAccount(@Args("input") createAccountInput: CreateAccountInput): Promise<CreateAccountOutput> {
-        try {
-            const { ok, error } = await this.usersService.createAccount(createAccountInput);
-            return { ok, error };
-        } catch (error) {
-            return { ok: false, error }
-        }
+        return this.usersService.createAccount(createAccountInput);
+        // try {
+        //     const { ok, error } = await this.usersService.createAccount(createAccountInput);
+        //     return { ok, error };
+        // } catch (error) {
+        //     return { ok: false, error }
+        // }
     }
 
     @Mutation(returns => LoginOutput)
