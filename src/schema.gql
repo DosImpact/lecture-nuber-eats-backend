@@ -1,0 +1,109 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Restaurant {
+  id: Float!
+  name: String!
+  isVegan: Boolean
+  address: String!
+}
+
+type User {
+  id: Float!
+  createdAt: String!
+  updatedAt: String!
+  email: String!
+  password: String!
+  role: UserRole!
+  verified: Boolean!
+}
+
+enum UserRole {
+  Owner
+  Client
+  Delivery
+}
+
+type CreateAccountOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditProfileOutput {
+  error: String
+  ok: Boolean!
+}
+
+type LoginOutput {
+  error: String
+  ok: Boolean!
+  token: String
+}
+
+type UserProfileOutput {
+  error: String
+  ok: Boolean!
+  user: User
+}
+
+type VerfiyEmailOutput {
+  error: String
+  ok: Boolean!
+}
+
+type Query {
+  isPizzaGood: Boolean!
+  restaurants: [Restaurant!]
+  hi: Boolean!
+  me: User!
+  userProfile(userId: Float!): UserProfileOutput!
+  editProfile(input: EditProfileInput!): EditProfileOutput!
+}
+
+input EditProfileInput {
+  email: String
+  password: String
+}
+
+type Mutation {
+  createRestaurantWithArgs(ownerName: String!, address: String!, isVegan: Boolean!, name: String!): Boolean!
+  createRestaurantWithInputType(CreateRestaurantInputDto: CreateRestaurantInputDto!): Boolean!
+  createRestaurant(name: String!, isVegan: Boolean!, address: String!): Boolean!
+  updateRestaurant(input: UpdateRestaurantDto!): Boolean!
+  createAccount(input: CreateAccountInput!): CreateAccountOutput!
+  login(input: LoginInput!): LoginOutput!
+  verfifyEmail(input: VerifyEmailInput!): VerfiyEmailOutput!
+}
+
+input CreateRestaurantInputDto {
+  name: String!
+  isVegan: Boolean
+  address: String = "주소를 입력해주세요"
+}
+
+input UpdateRestaurantDto {
+  id: Float!
+  data: UpdateRestaurantInputType!
+}
+
+input UpdateRestaurantInputType {
+  name: String
+  isVegan: Boolean
+  address: String = "주소를 입력해주세요"
+}
+
+input CreateAccountInput {
+  email: String!
+  password: String!
+  role: UserRole!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input VerifyEmailInput {
+  code: String!
+}
