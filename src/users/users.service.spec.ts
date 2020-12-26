@@ -16,11 +16,12 @@ import { UsersService } from './users.service';
 
 // 2. 가짜 모듈에서 서비스를 가져온다.
 
-const mockRepository = {
+// 함수로 만들어서 다른 레포처럼 작동하게끔 한다. ( 다른변수를 참조 )
+const mockRepository = () => ({
   findOne: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
-};
+});
 
 const mockJwtService = {
   sign: jest.fn(),
@@ -41,8 +42,10 @@ type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
   // it 테스트때 공통으로 사용할 변수들이다.
-  let service: UsersService;
-  let usersRepository: MockRepository<User>;
+  let service: UsersService; //user Service는 진짜이다.
+  let usersRepository: MockRepository<User>; // 모킹 repo
+  let verificationsRepository: MockRepository<Verification>; // 모킹 repo
+  let mailService: MailService; //  모킹 service
 
   // 테스트 하기전에 모든 it 에 대해서 , 사전 준비를 아래와 같이 한다.
   // 테스트 모듈을 만들고, 해당 모듈에서 테스트 service를 가져온다, 그리고 가짜 repo를 가져온다.
@@ -53,11 +56,11 @@ describe('UserService', () => {
         UsersService,
         {
           provide: getRepositoryToken(User),
-          useValue: mockRepository,
+          useValue: mockRepository(),
         },
         {
           provide: getRepositoryToken(Verification),
-          useValue: mockRepository,
+          useValue: mockRepository(),
         },
         {
           provide: JwtService,
@@ -69,36 +72,77 @@ describe('UserService', () => {
         },
       ],
     }).compile();
-    //  모듈 가져오기
+    //  모듈에 장착된 provider들 가져오기
     service = module.get<UsersService>(UsersService);
     usersRepository = module.get(getRepositoryToken(User));
+    verificationsRepository = module.get(getRepositoryToken(Verification));
+    mailService = module.get<MailService>(MailService);
   });
 
-  // 서비스가 정의 되었는지 테스트
+  // ✅ it서비스가 정의 되었는지 테스트
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  // createAccount 테스트
+  // 🔽 createAccount 테스트
   describe('createAccount', () => {
-    //이미 있는 emaill에 대해서 createAccount 하려는 경우
+    const createAccountArgs = {
+      email: '',
+      password: '',
+      role: 0,
+    };
+    // ✅ 존재하는 emaill로 createAccount
     it('should fail if user exists', async () => {
       // repo에서 findOne 할때 출력값 셋팅
       usersRepository.findOne.mockResolvedValue({
         id: 1,
-        email: 'test@email.com',
+        email: '',
       });
-      // service 실행
-      const result = await service.createAccount({
-        email: 'test@email.com',
-        password: '',
-        role: 0,
-      });
-      // 결과 확인
+      const result = await service.createAccount(createAccountArgs); // service 실행3
+      // 결과 확인 - 당연하 findOne의 모킹 데이터로 존재함이 ture이고 리턴됌
       expect(result).toMatchObject({
         ok: false,
         error: 'email is already taken',
       });
+    });
+
+    it('should create a new user', async () => {
+      usersRepository.findOne.mockResolvedValue(undefined); // user가 안만들어져서
+      usersRepository.create.mockReturnValue(createAccountArgs); // 만들어진 유저
+      usersRepository.save.mockResolvedValue(createAccountArgs); // 저장된 결과 만들어진 유저
+      verificationsRepository.create.mockReturnValue({
+        // verification의 user정보만 필요
+        user: createAccountArgs,
+      });
+      verificationsRepository.save.mockResolvedValue({
+        // 코드만 필요
+        code: 'code',
+      });
+
+      const result = await service.createAccount(createAccountArgs);
+      // 불려진 횟수를 check하고, 어떤 인저로 불려졌는지 check ( 모든 Data를 조사할 필요가 없다.)
+      expect(usersRepository.create).toHaveBeenCalledTimes(1); //eg) 1번 불러지고, 다음 인자로불려짐 TEST
+      expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
+
+      expect(usersRepository.save).toHaveBeenCalledTimes(1);
+      expect(usersRepository.save).toHaveBeenCalledWith(createAccountArgs);
+
+      expect(verificationsRepository.create).toHaveBeenCalledTimes(1);
+      expect(verificationsRepository.create).toHaveBeenCalledWith({
+        user: createAccountArgs,
+      });
+
+      expect(verificationsRepository.save).toHaveBeenCalledTimes(1);
+      expect(verificationsRepository.save).toHaveBeenCalledWith({
+        user: createAccountArgs,
+      });
+
+      expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
+      expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+      );
+      expect(result).toEqual({ ok: true });
     });
   });
 
