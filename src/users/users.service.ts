@@ -40,7 +40,11 @@ export class UsersService {
         const user = await this.users.save(
           this.users.create({ email, password, role }),
         ); // create User and hash the pwd
-        await this.verifications.save(this.verifications.create({ user }));
+        const verification = await this.verifications.save(
+          this.verifications.create({ user }),
+        );
+        this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
+
         return { ok: true };
       }
     } catch (error) {
@@ -54,9 +58,11 @@ export class UsersService {
       const user: User = await this.users.findOne(
         { email },
         {
-          select: ['password'],
+          select: ['password', 'id'], // password는 기본적으로 안준다. 그래서  select를 쓰는 순간 password를 가져오지만 다른것들은 안가져옴
         },
       ); // this.users ( Repo ) vs user (instance )
+      console.log('login', user);
+
       if (!user) {
         return { ok: false, error: 'User not found' };
       }
@@ -92,9 +98,13 @@ export class UsersService {
         { relations: ['user'] },
       );
       await this.verifications.delete(ver.id);
-      await this.verifications.save(this.verifications.create({ user }));
+      const verification = await this.verifications.save(
+        this.verifications.create({ user }),
+      );
+      this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
     }
     if (password) user.password = password;
+
     return this.users.save(user);
   }
 

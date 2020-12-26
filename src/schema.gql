@@ -58,12 +58,6 @@ type Query {
   hi: Boolean!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
-  editProfile(input: EditProfileInput!): EditProfileOutput!
-}
-
-input EditProfileInput {
-  email: String
-  password: String
 }
 
 type Mutation {
@@ -73,6 +67,7 @@ type Mutation {
   updateRestaurant(input: UpdateRestaurantDto!): Boolean!
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
   login(input: LoginInput!): LoginOutput!
+  editProfile(input: EditProfileInput!): EditProfileOutput!
   verfifyEmail(input: VerifyEmailInput!): VerfiyEmailOutput!
 }
 
@@ -102,6 +97,11 @@ input CreateAccountInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input EditProfileInput {
+  email: String
+  password: String
 }
 
 input VerifyEmailInput {

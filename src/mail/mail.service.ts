@@ -13,7 +13,7 @@ export class MailService {
     console.log('MailService options : ', options);
     // this.sendEmail('ypd03008@naver.com', 'hello doyoung', '테스트 메일임');
     // this.sendEmail('testing', 'test');
-    this.sendVerificationEmail('ypd03008@naver.com', '7777');
+    // this.sendVerificationEmail('ypd03008@naver.com', '7777');
   }
 
   private async sendEmail(
