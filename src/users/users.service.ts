@@ -34,6 +34,8 @@ export class UsersService {
     try {
       //check new User exist
       const exists: User = await this.users.findOne({ email });
+      console.log(exists);
+
       if (exists) {
         return { ok: false, error: 'email is already taken' };
       } else {

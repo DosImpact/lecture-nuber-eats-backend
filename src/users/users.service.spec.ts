@@ -40,9 +40,12 @@ const mockMailService = {
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
+  // it 테스트때 공통으로 사용할 변수들이다.
   let service: UsersService;
   let usersRepository: MockRepository<User>;
 
+  // 테스트 하기전에 모든 it 에 대해서 , 사전 준비를 아래와 같이 한다.
+  // 테스트 모듈을 만들고, 해당 모듈에서 테스트 service를 가져온다, 그리고 가짜 repo를 가져온다.
   beforeAll(async () => {
     // 테스팅 모듈을 직접 만든다. nestjs 에서 제공하는 jest와 호환가능한 테스팅 모듈 제공
     const module = await Test.createTestingModule({
@@ -68,6 +71,7 @@ describe('UserService', () => {
     }).compile();
     //  모듈 가져오기
     service = module.get<UsersService>(UsersService);
+    usersRepository = module.get(getRepositoryToken(User));
   });
 
   // 서비스가 정의 되었는지 테스트
@@ -75,11 +79,31 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
+  // createAccount 테스트
+  describe('createAccount', () => {
+    //이미 있는 emaill에 대해서 createAccount 하려는 경우
+    it('should fail if user exists', async () => {
+      // repo에서 findOne 할때 출력값 셋팅
+      usersRepository.findOne.mockResolvedValue({
+        id: 1,
+        email: 'test@email.com',
+      });
+      // service 실행
+      const result = await service.createAccount({
+        email: 'test@email.com',
+        password: '',
+        role: 0,
+      });
+      // 결과 확인
+      expect(result).toMatchObject({
+        ok: false,
+        error: 'email is already taken',
+      });
+    });
+  });
+
   // 테스트할 목록들을 todo로 나열
   // it.todo('createAccount');
-  describe('createAccount', () => {
-    it('shoud fail if user exist', () => {});
-  });
   it.todo('login');
   it.todo('findById');
   it.todo('editProfile');
