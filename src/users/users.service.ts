@@ -61,7 +61,7 @@ export class UsersService {
           select: ['password', 'id'], // password는 기본적으로 안준다. 그래서  select를 쓰는 순간 password를 가져오지만 다른것들은 안가져옴
         },
       ); // this.users ( Repo ) vs user (instance )
-      console.log('login', user);
+      // console.log('login', user);
 
       if (!user) {
         return { ok: false, error: 'User not found' };
@@ -105,7 +105,7 @@ export class UsersService {
     }
     if (password) user.password = password;
 
-    return this.users.save(user);
+    return this.users.save(user); // update 가 아닌 users.save(user) 로 @BeforeUpdate 를 거친다.
   }
 
   async verifyEmail(code: string): Promise<boolean> {
