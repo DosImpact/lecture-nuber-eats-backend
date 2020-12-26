@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from 'src/jwt/jwt.service';
 import { MailService } from 'src/mail/mail.service';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { UsersService } from './users.service';
@@ -30,8 +31,17 @@ const mockMailService = {
   sendVerificationEmail: jest.fn(),
 };
 
+// 가짜 T 제너릭, typeorm 레포 만들기 (알고리즘)
+// Partial 타입으로 모든 타입을 optional 하게 만든다.
+// Record 타입으로 object 타입의 key,value를 명시
+// keyof 를 통해서 Repository 객체의 모든 key 값을 가져온다. (Repository 의 제너릭은 T로 뺀다. T는 any로 둔다. )
+// 모든 key 값에 대응해서 jest.Mock 이라는 타입으로 value를 지정한다.
+
+type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
+
 describe('UserService', () => {
   let service: UsersService;
+  let usersRepository: MockRepository<User>;
 
   beforeAll(async () => {
     // 테스팅 모듈을 직접 만든다. nestjs 에서 제공하는 jest와 호환가능한 테스팅 모듈 제공
@@ -66,7 +76,10 @@ describe('UserService', () => {
   });
 
   // 테스트할 목록들을 todo로 나열
-  it.todo('createAccount');
+  // it.todo('createAccount');
+  describe('createAccount', () => {
+    it('shoud fail if user exist', () => {});
+  });
   it.todo('login');
   it.todo('findById');
   it.todo('editProfile');
