@@ -104,7 +104,7 @@ export class UsersService {
   ): Promise<EditProfileOutput> {
     // TypeORM의 update 는 raw SQL문을 날려서 상당히 빠르지만 존재성,JS @BeforeUpdate() 가 작동이 안된다.
     // return this.users.update(userId,{...editProfileInput})
-    const user = await this.users.findOne({ id: userId });
+    const user = await this.users.findOne(userId);
     console.log(user);
     try {
       if (email) {
