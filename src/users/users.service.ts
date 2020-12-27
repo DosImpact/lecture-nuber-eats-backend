@@ -8,9 +8,11 @@ import { User } from './entities/user.entity';
 // import * as jwt from "jsonwebtoken"
 // import { ConfigService } from "@nestjs/config";
 import { JwtService } from 'src/jwt/jwt.service';
-import { EditProfileInput } from './dtos/edit-profile.dto';
+import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { MailService } from 'src/mail/mail.service';
+import { UserProfileOutput } from 'src/users/dtos/user-profile.dto';
+import { VerfiyEmailOutput } from 'src/users/dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -80,37 +82,57 @@ export class UsersService {
     }
     // JWT 생성해 주기
   }
-  async findById(id: number): Promise<User> {
-    return this.users.findOne({ id });
+  async findById(id: number): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOneOrFail({ where: { id } });
+      return {
+        ok: true,
+        user,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'User Not Found',
+      };
+    }
   }
 
   // profile update
-  async editProfile(userId: number, { email, password }: EditProfileInput) {
+  async editProfile(
+    userId: number,
+    { email, password }: EditProfileInput,
+  ): Promise<EditProfileOutput> {
     // TypeORM의 update 는 raw SQL문을 날려서 상당히 빠르지만 존재성,JS @BeforeUpdate() 가 작동이 안된다.
     // return this.users.update(userId,{...editProfileInput})
     const user = await this.users.findOne({ id: userId });
     console.log(user);
+    try {
+      if (email) {
+        user.email = email;
+        user.verified = false;
+        // error : 기존의 verficiation이 제거되고 아래의 새로운 verification으로 대처되어야함.
+        const ver = await this.verifications.findOne(
+          { user },
+          { relations: ['user'] },
+        );
+        await this.verifications.delete(ver.id);
+        const verification = await this.verifications.save(
+          this.verifications.create({ user }),
+        );
+        this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
+      }
+      if (password) user.password = password;
 
-    if (email) {
-      user.email = email;
-      user.verified = false;
-      // error : 기존의 verficiation이 제거되고 아래의 새로운 verification으로 대처되어야함.
-      const ver = await this.verifications.findOne(
-        { user },
-        { relations: ['user'] },
-      );
-      await this.verifications.delete(ver.id);
-      const verification = await this.verifications.save(
-        this.verifications.create({ user }),
-      );
-      this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
+      await this.users.save(user); // update 가 아닌 users.save(user) 로 @BeforeUpdate 를 거친다.
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return { ok: false, error: 'Could not update profile.' };
     }
-    if (password) user.password = password;
-
-    return this.users.save(user); // update 가 아닌 users.save(user) 로 @BeforeUpdate 를 거친다.
   }
 
-  async verifyEmail(code: string): Promise<boolean> {
+  async verifyEmail(code: string): Promise<VerfiyEmailOutput> {
     // const verification = await this.verifications.findOne({code},{relations:["user"]})
     // const verification = await this.verifications.findOne({code},{loadRelationIds:true})
     try {
@@ -122,12 +144,14 @@ export class UsersService {
         verification.user.verified = true;
         await this.users.save(verification.user);
         await this.verifications.delete(verification.id);
-        return true;
+        return { ok: true };
       }
-      throw new Error();
+      // throw new Error();
+      return { ok: false, error: 'Verification not found' };
     } catch (error) {
       console.log(error);
-      return false;
+      // return false;
+      return { ok: false, error };
     }
   }
 }

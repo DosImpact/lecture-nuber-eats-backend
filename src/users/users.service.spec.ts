@@ -49,7 +49,9 @@ describe('UserService', () => {
 
   // 테스트 하기전에 모든 it 에 대해서 , 사전 준비를 아래와 같이 한다.
   // 테스트 모듈을 만들고, 해당 모듈에서 테스트 service를 가져온다, 그리고 가짜 repo를 가져온다.
-  beforeAll(async () => {
+  // beforeAll(async () => { 아래 모듈을 describe 전체 테스트에 적용
+  // beforeEach(async () => { 아래 모듈을 describe 각각의 테스트에 적용
+  beforeEach(async () => {
     // 테스팅 모듈을 직접 만든다. nestjs 에서 제공하는 jest와 호환가능한 테스팅 모듈 제공
     const module = await Test.createTestingModule({
       providers: [
@@ -94,6 +96,7 @@ describe('UserService', () => {
     // ✅ 존재하는 emaill로 createAccount
     it('should fail if user exists', async () => {
       // repo에서 findOne 할때 출력값 셋팅
+
       usersRepository.findOne.mockResolvedValue({
         id: 1,
         email: '',
@@ -105,22 +108,21 @@ describe('UserService', () => {
         error: 'email is already taken',
       });
     });
-
+    // ✅ 존재하지 않는 emaill로 createAccount
     it('should create a new user', async () => {
+      // 1 모킹 리턴값들 정의해주기
       usersRepository.findOne.mockResolvedValue(undefined); // user가 안만들어져서
       usersRepository.create.mockReturnValue(createAccountArgs); // 만들어진 유저
       usersRepository.save.mockResolvedValue(createAccountArgs); // 저장된 결과 만들어진 유저
       verificationsRepository.create.mockReturnValue({
-        // verification의 user정보만 필요
-        user: createAccountArgs,
+        user: createAccountArgs, // verification의 user정보만 필요
       });
       verificationsRepository.save.mockResolvedValue({
-        // 코드만 필요
-        code: 'code',
+        code: 'code', // 코드만 필요
       });
 
       const result = await service.createAccount(createAccountArgs);
-      // 불려진 횟수를 check하고, 어떤 인저로 불려졌는지 check ( 모든 Data를 조사할 필요가 없다.)
+      // 2 불려진 횟수를 check하고, 어떤 인저로 불려졌는지 check ( 모든 Data를 조사할 필요가 없다.)
       expect(usersRepository.create).toHaveBeenCalledTimes(1); //eg) 1번 불러지고, 다음 인자로불려짐 TEST
       expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
 
@@ -146,9 +148,14 @@ describe('UserService', () => {
     });
   });
 
+  describe('login', () => {
+    jest.fn().mockResolvedValue(true);
+    jest.fn(() => Promise.resolve(true));
+  });
+
   // 테스트할 목록들을 todo로 나열
   // it.todo('createAccount');
-  it.todo('login');
+  // it.todo('login');
   it.todo('findById');
   it.todo('editProfile');
   it.todo('verifyEmail');

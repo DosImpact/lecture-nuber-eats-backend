@@ -27,22 +27,11 @@ export class UsersResolver {
     @Args('input') createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
     return this.usersService.createAccount(createAccountInput);
-    // try {
-    //     const { ok, error } = await this.usersService.createAccount(createAccountInput);
-    //     return { ok, error };
-    // } catch (error) {
-    //     return { ok: false, error }
-    // }
   }
 
   @Mutation(returns => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
-    try {
-      const { ok, error, token } = await this.usersService.login(loginInput);
-      return { ok, error, token };
-    } catch (error) {
-      return { ok: false, error };
-    }
+    return await this.usersService.login(loginInput);
   }
 
   // JWT 토큰을 활용해서, 현재 나를 얻어와 리턴하기 - Authentication
@@ -60,21 +49,7 @@ export class UsersResolver {
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
-    try {
-      const user = await this.usersService.findById(userProfileInput.userId);
-      if (!user) {
-        throw new Error();
-      }
-      return {
-        ok: true,
-        user,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error: `User Not Found : ${userProfileInput.userId}`,
-      };
-    }
+    return await this.usersService.findById(userProfileInput.userId);
   }
 
   @UseGuards(AuthGuard)
@@ -83,31 +58,13 @@ export class UsersResolver {
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    try {
-      await this.usersService.editProfile(authUser.id, editProfileInput);
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
-    return {
-      ok: true,
-    };
+    return this.usersService.editProfile(authUser.id, editProfileInput);
   }
 
   @Mutation(returns => VerfiyEmailOutput)
-  async verfifyEmail(@Args('input') { code }: VerifyEmailInput) {
-    try {
-      await this.usersService.verifyEmail(code);
-      return {
-        ok: true,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+  async verfifyEmail(
+    @Args('input') { code }: VerifyEmailInput,
+  ): Promise<VerfiyEmailOutput> {
+    return await this.usersService.verifyEmail(code);
   }
 }
