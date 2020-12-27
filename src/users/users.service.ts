@@ -52,7 +52,7 @@ export class UsersService {
         return { ok: true };
       }
     } catch (error) {
-      return { ok: false, error: "Could't create User" };
+      return { ok: false, error: "Couldn't create account" };
     }
   }
 
@@ -78,7 +78,7 @@ export class UsersService {
       const token = this.jwtService.sign({ id: user.id });
       return { ok: true, token };
     } catch (error) {
-      return { ok: false, error };
+      return { ok: false, error: "Can't log user in." };
     }
     // JWT 생성해 주기
   }

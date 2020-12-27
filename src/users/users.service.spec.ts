@@ -21,10 +21,11 @@ const mockRepository = () => ({
   findOne: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
+  findOneOrFail: jest.fn(),
 });
 
 const mockJwtService = {
-  sign: jest.fn(),
+  sign: jest.fn(() => 'signed-token-baby'),
   verify: jest.fn(),
 };
 
@@ -46,6 +47,7 @@ describe('UserService', () => {
   let usersRepository: MockRepository<User>; // 모킹 repo
   let verificationsRepository: MockRepository<Verification>; // 모킹 repo
   let mailService: MailService; //  모킹 service
+  let jwtService: JwtService; //  모킹 service
 
   // 테스트 하기전에 모든 it 에 대해서 , 사전 준비를 아래와 같이 한다.
   // 테스트 모듈을 만들고, 해당 모듈에서 테스트 service를 가져온다, 그리고 가짜 repo를 가져온다.
@@ -79,6 +81,7 @@ describe('UserService', () => {
     usersRepository = module.get(getRepositoryToken(User));
     verificationsRepository = module.get(getRepositoryToken(Verification));
     mailService = module.get<MailService>(MailService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   // ✅ it서비스가 정의 되었는지 테스트
@@ -146,17 +149,97 @@ describe('UserService', () => {
       );
       expect(result).toEqual({ ok: true });
     });
+
+    // ✅ DB 검색 애러
+    it('should fail on exception', async () => {
+      usersRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.createAccount(createAccountArgs);
+      expect(result).toEqual({ ok: false, error: "Couldn't create account" });
+    });
   });
 
+  // 🔽 Login 테스트
   describe('login', () => {
-    jest.fn().mockResolvedValue(true);
-    jest.fn(() => Promise.resolve(true));
+    // ✔ 같은 코드 로직임!
+    // jest.fn().mockResolvedValue(true);
+    // jest.fn(() => Promise.resolve(true));
+
+    const loginArgs = {
+      email: 'bs@email.com',
+      password: 'bs.password',
+    };
+    // ✅ login 시도 , 사용자 null 반환
+    it('should fail if user does not exist', async () => {
+      usersRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.login(loginArgs);
+
+      expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(usersRepository.findOne).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(Object),
+      );
+      expect(result).toEqual({
+        ok: false,
+        error: 'User not found',
+      });
+    });
+
+    // ✅
+    it('should fail if the password is wrong', async () => {
+      const mockedUser = {
+        checkPassword: jest.fn(() => Promise.resolve(false)),
+      };
+      usersRepository.findOne.mockResolvedValue(mockedUser);
+      const result = await service.login(loginArgs);
+      expect(result).toEqual({ ok: false, error: 'Wrong password' });
+    });
+
+    // ✅
+    it('should return token if password correct', async () => {
+      const mockedUser = {
+        id: 1,
+        checkPassword: jest.fn(() => Promise.resolve(true)),
+      };
+      usersRepository.findOne.mockResolvedValue(mockedUser);
+      const result = await service.login(loginArgs);
+      // console.log(result);
+      expect(jwtService.sign).toHaveBeenCalledTimes(1);
+      expect(jwtService.sign).toHaveBeenCalledWith(expect.any(Object));
+      expect(result).toEqual({ ok: true, token: 'signed-token-baby' });
+    });
+
+    // ✅
+    it('should fail on exception', async () => {
+      usersRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.login(loginArgs);
+      expect(result).toEqual({ ok: false, error: "Can't log user in." });
+    });
+  });
+
+  // 🔽 findById 테스트
+  describe('findById', () => {
+    const findByIdArgs = {
+      id: 1,
+    };
+    // ✅
+    it('should find an existing user', async () => {
+      usersRepository.findOneOrFail.mockResolvedValue(findByIdArgs);
+      const result = await service.findById(1);
+      expect(result).toEqual({ ok: true, user: findByIdArgs });
+    });
+    // ✅
+    it('should fail if no user is found', async () => {
+      usersRepository.findOneOrFail.mockRejectedValue(new Error());
+      const result = await service.findById(1);
+      expect(result).toEqual({ ok: false, error: 'User Not Found' });
+    });
   });
 
   // 테스트할 목록들을 todo로 나열
   // it.todo('createAccount');
   // it.todo('login');
-  it.todo('findById');
+  // it.todo('findById');
   it.todo('editProfile');
   it.todo('verifyEmail');
 });
