@@ -1,45 +1,60 @@
-import { Field, InputType, ObjectType } from "@nestjs/graphql";
-import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Category } from './category.entity';
 
-@InputType({isAbstract:true}) // Object타입을 메인으로 사용하는데, mappedType을 사용하기 위해 InputType이 필요해서,abstract함
-@ObjectType()   // gprahql 에서 oject 스키마를 정의하고 싶다.
-@Entity()       // Entity 를 정의하므로써 typeORM의 모델을 정의한다. 이둘을 결합이 가능
+@InputType('RestaurantInputType', { isAbstract: true }) // Object타입을 메인으로 사용하는데, mappedType을 사용하기 위해 InputType이 필요해서,abstract함
+@ObjectType() // gprahql 에서 oject 스키마를 정의하고 싶다.
+@Entity() // Entity 를 정의하므로써 typeORM의 모델을 정의한다. 이둘을 결합이 가능
 export class Restaurant {
-    //해당 필드에 대해 데코레이팅
-    @PrimaryGeneratedColumn()
-    @Field(type => Number)
-    id: number;
+  //해당 필드에 대해 데코레이팅
+  @PrimaryGeneratedColumn()
+  @Field(type => Number)
+  id: number;
 
-    @Column()               //TypeORM 의 컬럼
-    @Field(type => String)  //Graphql Object의 필드
-    @IsString()             // DTO Check
-    @Length(5)
-    name: string;
+  @Column() //TypeORM 의 컬럼
+  @Field(type => String) //Graphql Object의 필드
+  @IsString() // DTO Check
+  @Length(5)
+  name: string;
 
-    //해당 필드에 대해 데코레이팅 , null이어도 됨
-    // @Field(type => Boolean, { nullable: true })
-    // isGood?: boolean
+  //해당 필드에 대해 데코레이팅 , null이어도 됨
+  // @Field(type => Boolean, { nullable: true })
+  // isGood?: boolean
 
-    @Column({default:true})                     // DB에 들어갈때 디폴트값
-    @Field(type => Boolean,{nullable:true}) //{defaultValue:true} , {nullable:true} 
-    @IsOptional()
-    @IsBoolean()
-    isVegan?: boolean;
+  @Column({ default: true }) // DB에 들어갈때 디폴트값
+  @Field(type => Boolean, { nullable: true }) //{defaultValue:true} , {nullable:true}
+  @IsOptional()
+  @IsBoolean()
+  isVegan?: boolean;
 
-    @Column()
-    @Field(type => String,{defaultValue:"주소를 입력해주세요"})
-    @IsString()
-    address: string;
+  @Column()
+  @Field(type => String, { defaultValue: '주소를 입력해주세요' })
+  @IsString()
+  address: string;
 
-    // @Column()
-    // @Field(type => String)
-    // @IsString()
-    // ownerName: string;
+  // @Column()
+  // @Field(type => String)
+  // @IsString()
+  // ownerName: string;
 
-    // @Column()
-    // @Field(type => String)
-    // @IsString()
-    // categoryName:string;
+  // 카테고리는 여러 레스토랑은 갖는다.  ( many ) [ me ]
+  // To
+  // 레스토랑은 반드시 하나의 카테고리만 가진다. (one)
+  @Field(type => Category, { nullable: true })
+  @ManyToOne(
+    type => Category,
+    category => category.restaurant,
+    { nullable: true, onDelete: 'SET NULL' },
+  )
+  category: Category;
 
+  @Field(type => User, { nullable: true })
+  @ManyToOne(
+    type => User,
+    user => user.restaurant,
+    { nullable: true },
+  )
+  owner: User;
 }

@@ -2,11 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Category {
+  id: Float!
+  createdAt: String!
+  updatedAt: String!
+  name: String!
+  coverImg: String!
+  restaurant: [Restaurant!]!
+}
+
 type Restaurant {
   id: Float!
   name: String!
   isVegan: Boolean
   address: String!
+  category: Category
+  owner: User!
 }
 
 type User {
@@ -17,6 +28,7 @@ type User {
   password: String!
   role: UserRole!
   verified: Boolean!
+  restaurant: [Restaurant!]!
 }
 
 enum UserRole {
@@ -53,39 +65,22 @@ type VerfiyEmailOutput {
 }
 
 type Query {
-  isPizzaGood: Boolean!
-  restaurants: [Restaurant!]
   hi: Boolean!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
+  isPizzaGood: Boolean!
+  restaurants: [Restaurant!]
 }
 
 type Mutation {
-  createRestaurantWithArgs(ownerName: String!, address: String!, isVegan: Boolean!, name: String!): Boolean!
-  createRestaurantWithInputType(CreateRestaurantInputDto: CreateRestaurantInputDto!): Boolean!
-  createRestaurant(name: String!, isVegan: Boolean!, address: String!): Boolean!
-  updateRestaurant(input: UpdateRestaurantDto!): Boolean!
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
   login(input: LoginInput!): LoginOutput!
   editProfile(input: EditProfileInput!): EditProfileOutput!
   verfifyEmail(input: VerifyEmailInput!): VerfiyEmailOutput!
-}
-
-input CreateRestaurantInputDto {
-  name: String!
-  isVegan: Boolean
-  address: String = "주소를 입력해주세요"
-}
-
-input UpdateRestaurantDto {
-  id: Float!
-  data: UpdateRestaurantInputType!
-}
-
-input UpdateRestaurantInputType {
-  name: String
-  isVegan: Boolean
-  address: String = "주소를 입력해주세요"
+  createRestaurantWithArgs(ownerName: String!, address: String!, isVegan: Boolean!, name: String!): Boolean!
+  createRestaurantWithInputType(CreateRestaurantInputDto: CreateRestaurantInputDto!): Boolean!
+  createRestaurant: Boolean!
+  updateRestaurant(input: UpdateRestaurantDto!): Boolean!
 }
 
 input CreateAccountInput {
@@ -106,4 +101,48 @@ input EditProfileInput {
 
 input VerifyEmailInput {
   code: String!
+}
+
+input CreateRestaurantInputDto {
+  name: String!
+  isVegan: Boolean
+  address: String = "주소를 입력해주세요"
+  category: CategoryInputType
+  owner: UserInputType!
+}
+
+input CategoryInputType {
+  name: String!
+  coverImg: String!
+  restaurant: [RestaurantInputType!]!
+}
+
+input RestaurantInputType {
+  id: Float!
+  name: String!
+  isVegan: Boolean
+  address: String = "주소를 입력해주세요"
+  category: CategoryInputType
+  owner: UserInputType!
+}
+
+input UserInputType {
+  email: String!
+  password: String!
+  role: UserRole!
+  verified: Boolean!
+  restaurant: [RestaurantInputType!]!
+}
+
+input UpdateRestaurantDto {
+  id: Float!
+  data: UpdateRestaurantInputType!
+}
+
+input UpdateRestaurantInputType {
+  name: String
+  isVegan: Boolean
+  address: String = "주소를 입력해주세요"
+  category: CategoryInputType
+  owner: UserInputType
 }

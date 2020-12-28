@@ -8,8 +8,6 @@ import * as Joi from 'joi';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RestaurantsModule } from './restaurants/restaurants.module';
-import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
@@ -17,6 +15,9 @@ import { JwtMiddleWare } from './jwt/jwt.middleware';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { join } from 'path';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { Category } from './restaurants/entities/category.entity';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
   imports: [
@@ -55,10 +56,9 @@ import { join } from 'path';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod', // db연결과 동시에 model migration 실행, 아래 entities가 들어간다.(!prod일때)
       logging: true,
-      entities: [Restaurant, User, Verification],
+      entities: [User, Verification, Restaurant, Category],
     }),
-    RestaurantsModule,
-    UsersModule,
+
     JwtModule.forRoot({
       privateKey: process.env.SECRET_KEY,
     }),
@@ -67,6 +67,8 @@ import { join } from 'path';
       domain: process.env.MAILGUN_DOMAIN_NAME,
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
+    UsersModule,
+    RestaurantsModule,
   ],
   controllers: [],
   providers: [],
