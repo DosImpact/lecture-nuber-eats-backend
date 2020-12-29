@@ -42,7 +42,7 @@ export class RestaurantsService {
       //  categoryName.replace(" ","-") 대신에 Reg를 사용 ( 한번만 작동 )
       const categorySlug = categoryName.replace(/ /g, '-');
       let category = await this.categories.findOne({
-        where: { slug: categoryName },
+        where: { slug: categorySlug },
       });
 
       if (!category) {
@@ -50,7 +50,7 @@ export class RestaurantsService {
           this.categories.create({ name: categoryName, slug: categorySlug }),
         );
       }
-
+      newRestaurant.category = category;
       await this.restaurants.save(newRestaurant);
       return { ok: true };
     } catch (error) {

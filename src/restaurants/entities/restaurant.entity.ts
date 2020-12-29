@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+import { IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -17,7 +17,6 @@ export class Restaurant extends CoreEntity {
   @Column() //TypeORM 의 컬럼
   @Field(type => String) //Graphql Object의 필드
   @IsString() // DTO Check
-  @Length(5)
   name: string;
 
   //해당 필드에 대해 데코레이팅 , null이어도 됨
