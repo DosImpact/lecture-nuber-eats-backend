@@ -7,17 +7,20 @@ type Category {
   createdAt: String!
   updatedAt: String!
   name: String!
-  coverImg: String!
+  coverImg: String
+  slug: String!
   restaurant: [Restaurant!]!
 }
 
 type Restaurant {
   id: Float!
+  createdAt: String!
+  updatedAt: String!
   name: String!
-  isVegan: Boolean
+  coverImg: String!
   address: String!
   category: Category
-  owner: User!
+  owner: User
 }
 
 type User {
@@ -28,7 +31,7 @@ type User {
   password: String!
   role: UserRole!
   verified: Boolean!
-  restaurant: [Restaurant!]!
+  restaurant: [Restaurant!]
 }
 
 enum UserRole {
@@ -64,12 +67,15 @@ type VerfiyEmailOutput {
   ok: Boolean!
 }
 
+type CreateRestauranOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   hi: Boolean!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
-  isPizzaGood: Boolean!
-  restaurants: [Restaurant!]
 }
 
 type Mutation {
@@ -77,10 +83,7 @@ type Mutation {
   login(input: LoginInput!): LoginOutput!
   editProfile(input: EditProfileInput!): EditProfileOutput!
   verfifyEmail(input: VerifyEmailInput!): VerfiyEmailOutput!
-  createRestaurantWithArgs(ownerName: String!, address: String!, isVegan: Boolean!, name: String!): Boolean!
-  createRestaurantWithInputType(CreateRestaurantInputDto: CreateRestaurantInputDto!): Boolean!
-  createRestaurant: Boolean!
-  updateRestaurant(input: UpdateRestaurantDto!): Boolean!
+  createRestaurant(input: CreateRestaurantInput!): CreateRestauranOutput!
 }
 
 input CreateAccountInput {
@@ -103,46 +106,9 @@ input VerifyEmailInput {
   code: String!
 }
 
-input CreateRestaurantInputDto {
-  name: String!
-  isVegan: Boolean
-  address: String = "주소를 입력해주세요"
-  category: CategoryInputType
-  owner: UserInputType!
-}
-
-input CategoryInputType {
+input CreateRestaurantInput {
   name: String!
   coverImg: String!
-  restaurant: [RestaurantInputType!]!
-}
-
-input RestaurantInputType {
-  id: Float!
-  name: String!
-  isVegan: Boolean
   address: String = "주소를 입력해주세요"
-  category: CategoryInputType
-  owner: UserInputType!
-}
-
-input UserInputType {
-  email: String!
-  password: String!
-  role: UserRole!
-  verified: Boolean!
-  restaurant: [RestaurantInputType!]!
-}
-
-input UpdateRestaurantDto {
-  id: Float!
-  data: UpdateRestaurantInputType!
-}
-
-input UpdateRestaurantInputType {
-  name: String
-  isVegan: Boolean
-  address: String = "주소를 입력해주세요"
-  category: CategoryInputType
-  owner: UserInputType
+  categoryName: String!
 }

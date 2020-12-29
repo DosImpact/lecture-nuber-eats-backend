@@ -1,7 +1,23 @@
-import { ArgsType, Field, OmitType } from '@nestjs/graphql';
-import { IsBoolean, IsString, Length } from 'class-validator';
+import {
+  Field,
+  InputType,
+  ObjectType,
+  OmitType,
+  PickType,
+} from '@nestjs/graphql';
+import { extname } from 'path';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Restaurant } from '../entities/restaurant.entity';
 
-// @ArgsType() // class안의 내용물을 ... spread 한것처럼  args를 받는다.,
-@ArgsType()
-export class CreateRestaurantDto extends OmitType(Restaurant, ['id']) {}
+@InputType()
+export class CreateRestaurantInput extends PickType(Restaurant, [
+  'name',
+  'coverImg',
+  'address',
+]) {
+  @Field(types => String)
+  categoryName: string;
+}
+
+@ObjectType()
+export class CreateRestauranOutput extends CoreOutput {}
