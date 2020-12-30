@@ -72,6 +72,11 @@ type CreateRestauranOutput {
   ok: Boolean!
 }
 
+type EditRestaurantOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   hi: Boolean!
   me: User!
@@ -84,6 +89,7 @@ type Mutation {
   editProfile(input: EditProfileInput!): EditProfileOutput!
   verfifyEmail(input: VerifyEmailInput!): VerfiyEmailOutput!
   createRestaurant(input: CreateRestaurantInput!): CreateRestauranOutput!
+  editRestaurant(input: EditRestaurantInput!): EditRestaurantOutput!
 }
 
 input CreateAccountInput {
@@ -111,4 +117,12 @@ input CreateRestaurantInput {
   coverImg: String!
   address: String = "주소를 입력해주세요"
   categoryName: String!
+}
+
+input EditRestaurantInput {
+  name: String
+  coverImg: String
+  address: String = "주소를 입력해주세요"
+  categoryName: String
+  restaurantId: Float!
 }
