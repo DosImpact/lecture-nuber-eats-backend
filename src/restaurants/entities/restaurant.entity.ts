@@ -63,6 +63,7 @@ export class Restaurant extends CoreEntity {
   )
   owner: User;
 
+  // 일대다 관계에서 키를 가져오는 옵션이다.
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
 }
