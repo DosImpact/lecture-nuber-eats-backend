@@ -89,3 +89,35 @@ $ npm run test:cov
 레스토랑 페이지
 하나의 레스토랑
 ```
+
+# Service 정의
+
+- DB 트랜젝션에 따라 CRUD 로 나누었고 READ는 READ one, Read Many with query, Read Many with pagination 으로 표준을 잡았다.
+- Service정의와 Resolver는 거의 1:1 매칭 시킨다.
+- eg
+
+```
+  [Restaurant]
+
+C : createRestaurant
+
+R.one
+R.query
+R.many
+
+U : editRestaurant
+
+D : deleteRestaurant
+
+ [Category]
+
+C :
+
+R.one
+R.query
+R.many  : allCategories
+
+U :
+
+D :
+```
