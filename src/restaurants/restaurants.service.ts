@@ -24,6 +24,7 @@ import {
   SearchRestaurantsOutput,
 } from './dtos/search-restaurants.dto';
 import { Category } from './entities/category.entity';
+import { Dish } from './entities/dish.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
@@ -64,6 +65,8 @@ export class RestaurantsService {
     // @InjectRepository(Category)
     // private readonly categories: Repository<Category>,
     private readonly categories: CategoryRepository,
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
   ) {}
 
   // async getOrCreateCategory(name: string): Promise<Category> {
@@ -332,6 +335,39 @@ export class RestaurantsService {
     owner: User,
     createDishInput: CreateDishInput,
   ): Promise<CreateDishOutput> {
-    return { ok: false };
+    try {
+      // owner의 레스토랑 있는지
+      // restaurant 가져오기 ,id 비교 소유자인지
+      const restaurant = await this.restaurants.findOne(
+        createDishInput.restaurantId,
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+      await this.dishes.save(
+        this.dishes.create({
+          ...createDishInput,
+          restaurant,
+        }),
+      );
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        ok: false,
+        error: 'Could not create dish',
+      };
+    }
   }
 }

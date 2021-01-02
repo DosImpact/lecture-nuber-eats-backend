@@ -13,13 +13,18 @@ type Category {
   restaurantCount: Int!
 }
 
+type DishChoice {
+  name: String!
+  extra: Int
+}
+
 type DishOption {
   id: Float!
   createdAt: String!
   updatedAt: String!
   name: String!
-  choices: [String!]
-  extra: Int!
+  choices: [DishChoice!]
+  extra: Int
 }
 
 type Dish {
@@ -231,6 +236,11 @@ input CreateDishInput {
 
 input DishOptionInputType {
   name: String!
-  choices: [String!]
-  extra: Int!
+  choices: [DishChoiceInputType!]
+  extra: Int
+}
+
+input DishChoiceInputType {
+  name: String!
+  extra: Int
 }
