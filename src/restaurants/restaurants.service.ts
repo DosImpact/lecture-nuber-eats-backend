@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Like, Repository } from 'typeorm';
+import { Like, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
@@ -284,16 +284,20 @@ export class RestaurantsService {
     page,
     query,
   }: SearchRestaurantsInput): Promise<SearchRestaurantsOutput> {
-    // 1. case sensitive  where - name eg:    where: { name: Like(`%${query}%`) },
-    // 2. case insensitive
+    // 1. case sensitive    eg:    where: { name: Like(`%${query}%`) },
+    // 2. case insensitive  eg) where: { name: Raw(name => `${name} ILIKE '%${query}%'`) },
     try {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
-        where: { name: Like(`%${query}%`) },
+        // where: { name: Like(`%${query}%`) },
+        where: { name: Raw(name => `${name} ILIKE '%${query}%'`) },
+        skip: (page - 1) * 25,
+        take: 25,
       });
       return {
         ok: true,
         restaurants,
         totalResults,
+        totalPage: Math.ceil(totalResults / 25),
       };
     } catch (error) {}
 
