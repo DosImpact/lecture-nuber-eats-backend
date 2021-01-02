@@ -82,8 +82,11 @@ export class CategoryResolver {
     return this.restaurantService.allCategories();
   }
 
+  // 하나의 카테고리에대한 레스토랑 검색 -  관계된 레스토랑을 pagination으로 얻어온다.
   @Query(type => CategoryOutput)
-  category(@Args() categoryInput: CategoryInput): Promise<CategoryOutput> {
+  category(
+    @Args('input') categoryInput: CategoryInput,
+  ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);
   }
 }

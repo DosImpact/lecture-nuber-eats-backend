@@ -28,5 +28,5 @@ export class Category extends CoreEntity {
     restaurant => restaurant.category,
   )
   @Field(type => [Restaurant])
-  restaurant: Restaurant[];
+  restaurants: Restaurant[];
 }

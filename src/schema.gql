@@ -9,7 +9,7 @@ type Category {
   name: String!
   coverImg: String
   slug: String!
-  restaurant: [Restaurant!]!
+  restaurants: [Restaurant!]!
   restaurantCount: Int!
 }
 
@@ -74,6 +74,13 @@ type AllCategoriesOutput {
   categories: [Category!]
 }
 
+type CategoryOutput {
+  error: String
+  ok: Boolean!
+  totalPage: Int
+  category: Category
+}
+
 type CreateRestauranOutput {
   error: String
   ok: Boolean!
@@ -94,6 +101,12 @@ type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
   allCategories: AllCategoriesOutput!
+  category(input: CategoryInput!): CategoryOutput!
+}
+
+input CategoryInput {
+  page: Int = 1
+  slug: String!
 }
 
 type Mutation {
