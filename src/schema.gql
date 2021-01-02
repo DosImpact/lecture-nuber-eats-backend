@@ -36,7 +36,7 @@ type Order {
   driver: User
   restaurant: Restaurant!
   dishes: [Dish!]!
-  total: Float!
+  total: Float
   status: OrderStatus!
 }
 
@@ -184,6 +184,11 @@ type SearchRestaurantsOutput {
   restaurants: [Restaurant!]
 }
 
+type CreateOrderOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   hi: Boolean!
   me: User!
@@ -219,6 +224,7 @@ type Mutation {
   createDish(input: CreateDishInput!): CreateDishOutput!
   editDish(input: EditDishInput!): EditDishOutput!
   deleteDish(input: DeleteDishInput!): DeleteDishOutput!
+  createOrder(input: CreateOrderInput!): CreateOrderOutput!
 }
 
 input CreateAccountInput {
@@ -289,4 +295,55 @@ input EditDishInput {
 
 input DeleteDishInput {
   dishId: Int!
+}
+
+input CreateOrderInput {
+  dishes: [DishInputType!]!
+  restaurantId: Int!
+}
+
+input DishInputType {
+  name: String!
+  price: Int!
+  photo: String
+  description: String!
+  restaurant: RestaurantInputType!
+  options: [DishOptionInputType!]
+}
+
+input RestaurantInputType {
+  id: Float!
+  name: String!
+  coverImg: String!
+  address: String = "주소를 입력해주세요"
+  category: CategoryInputType
+  owner: UserInputType
+  menu: [DishInputType!]!
+  orders: [OrderInputType!]!
+}
+
+input CategoryInputType {
+  name: String!
+  coverImg: String
+  slug: String!
+  restaurants: [RestaurantInputType!]!
+}
+
+input UserInputType {
+  email: String!
+  password: String!
+  role: UserRole!
+  verified: Boolean!
+  restaurant: [RestaurantInputType!]
+  orders: [OrderInputType!]!
+  rides: [OrderInputType!]!
+}
+
+input OrderInputType {
+  customer: UserInputType
+  driver: UserInputType
+  restaurant: RestaurantInputType!
+  dishes: [DishInputType!]!
+  total: Float
+  status: OrderStatus!
 }
