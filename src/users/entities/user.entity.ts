@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsEmail, IsEnum } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 /**
  * id , createdAt, updatedAt ( 모든 entity의 디폴트)
@@ -57,6 +58,22 @@ export class User extends CoreEntity {
   )
   @Field(type => [Restaurant], { nullable: true })
   restaurant: Restaurant[];
+
+  // Relation Order
+
+  @Field(type => [Order])
+  @OneToMany(
+    type => Order,
+    order => order.customer,
+  )
+  orders: Order[];
+
+  @Field(type => [Order])
+  @OneToMany(
+    type => Order,
+    order => order.driver,
+  )
+  rides: Order[];
 
   @BeforeInsert() // DB에 Save 할때 거치는 미들웨어같은 함수
   @BeforeUpdate()

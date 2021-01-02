@@ -2,17 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Category {
-  id: Float!
-  createdAt: String!
-  updatedAt: String!
-  name: String!
-  coverImg: String
-  slug: String!
-  restaurants: [Restaurant!]!
-  restaurantCount: Int!
-}
-
 type DishChoice {
   name: String!
   extra: Int
@@ -39,6 +28,36 @@ type Dish {
   options: [DishOption!]
 }
 
+type Order {
+  id: Float!
+  createdAt: String!
+  updatedAt: String!
+  customer: User
+  driver: User
+  restaurant: Restaurant!
+  dishes: [Dish!]!
+  total: Float!
+  status: OrderStatus!
+}
+
+enum OrderStatus {
+  Pending
+  Cooking
+  PickedUp
+  Delivered
+}
+
+type Category {
+  id: Float!
+  createdAt: String!
+  updatedAt: String!
+  name: String!
+  coverImg: String
+  slug: String!
+  restaurants: [Restaurant!]!
+  restaurantCount: Int!
+}
+
 type Restaurant {
   id: Float!
   createdAt: String!
@@ -49,6 +68,7 @@ type Restaurant {
   category: Category
   owner: User
   menu: [Dish!]!
+  orders: [Order!]!
 }
 
 type User {
@@ -60,6 +80,8 @@ type User {
   role: UserRole!
   verified: Boolean!
   restaurant: [Restaurant!]
+  orders: [Order!]!
+  rides: [Order!]!
 }
 
 enum UserRole {
