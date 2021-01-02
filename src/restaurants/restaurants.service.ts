@@ -4,6 +4,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Like, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import {
   CreateRestauranOutput,
   CreateRestaurantInput,
@@ -76,6 +77,8 @@ export class RestaurantsService {
   //   }
   //   return category;
   // }
+
+  // ------------ Restaurant
 
   async createRestaurant(
     owner: User,
@@ -262,7 +265,9 @@ export class RestaurantsService {
     restaurantId,
   }: RestaurantInput): Promise<RestaurantOutput> {
     try {
-      const restaurant = await this.restaurants.findOne(restaurantId);
+      const restaurant = await this.restaurants.findOne(restaurantId, {
+        relations: ['menu'],
+      });
       if (!restaurant) {
         return {
           ok: false,
@@ -304,6 +309,8 @@ export class RestaurantsService {
     return { ok: true };
   }
 
+  // ------------ Categories
+
   async allCategories(): Promise<AllCategoriesOutput> {
     try {
       const categories = await this.categories.find();
@@ -317,5 +324,14 @@ export class RestaurantsService {
         error: 'Could not load categories',
       };
     }
+  }
+
+  // ------------ Dish
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    return { ok: false };
   }
 }

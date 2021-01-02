@@ -2,7 +2,11 @@ import { RestaurantsService } from './restaurants.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
-import { CategoryResolver, RestaurantResolver } from './restaurants.resolver';
+import {
+  CategoryResolver,
+  DishResolver,
+  RestaurantResolver,
+} from './restaurants.resolver';
 // import { Category } from './entities/category.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
@@ -11,6 +15,11 @@ import { CategoryRepository } from './repositories/category.repository';
   imports: [
     TypeOrmModule.forFeature([Restaurant, CategoryRepository]), // service에서 RestaurantRepository 만들기 위한 임포트,
   ],
-  providers: [RestaurantsService, RestaurantResolver, CategoryResolver],
+  providers: [
+    RestaurantsService,
+    RestaurantResolver,
+    CategoryResolver,
+    DishResolver,
+  ],
 })
 export class RestaurantsModule {}
