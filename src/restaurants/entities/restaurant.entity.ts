@@ -6,10 +6,12 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
 import { Category } from './category.entity';
+import { Dish } from './dish.entity';
 
 @InputType('RestaurantInputType', { isAbstract: true }) // Object타입을 메인으로 사용하는데, mappedType을 사용하기 위해 InputType이 필요해서,abstract함
 @ObjectType() // gprahql 에서 oject 스키마를 정의하고 싶다.
@@ -66,4 +68,11 @@ export class Restaurant extends CoreEntity {
   // 일대다 관계에서 키를 가져오는 옵션이다.
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
+
+  @Field(type => [Dish])
+  @OneToMany(
+    type => Dish,
+    dish => dish.restaurant,
+  )
+  menu: Dish[];
 }
