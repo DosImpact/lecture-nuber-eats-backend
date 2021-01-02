@@ -78,6 +78,8 @@ type CategoryOutput {
   error: String
   ok: Boolean!
   totalPage: Int
+  totalResults: Int
+  restaurants: Restaurant
   category: Category
 }
 
@@ -96,12 +98,25 @@ type EditRestaurantOutput {
   ok: Boolean!
 }
 
+type RestaurantsOutput {
+  error: String
+  ok: Boolean!
+  totalPage: Int
+  totalResults: Int
+  results: [Restaurant!]
+}
+
 type Query {
   hi: Boolean!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
+  restaurants(input: RestaurantsInput!): RestaurantsOutput!
   allCategories: AllCategoriesOutput!
   category(input: CategoryInput!): CategoryOutput!
+}
+
+input RestaurantsInput {
+  page: Int = 1
 }
 
 input CategoryInput {
