@@ -12,9 +12,9 @@ import { Restaurant } from './restaurant.entity';
 @ObjectType()
 export class DishChoice {
   @Field(type => String)
-  name: string;
+  name: string; // XL,L,곱빼기
   @Field(type => Int, { nullable: true })
-  extra?: number;
+  extra?: number; // +3달라
 }
 
 @InputType('DishOptionInputType', { isAbstract: true })
@@ -22,13 +22,13 @@ export class DishChoice {
 export class DishOption extends CoreEntity {
   // 이름 옵션명들 엑스트라가격
   @Field(type => String)
-  name: string;
+  name: string; // 하와이안 피자.
 
   @Field(type => [DishChoice], { nullable: true })
-  choices?: DishChoice[];
+  choices?: DishChoice[]; // 크기 초이스
 
   @Field(type => Int, { nullable: true })
-  extra?: number;
+  extra?: number; // 5달라
 }
 
 @InputType('DishInputType', { isAbstract: true })

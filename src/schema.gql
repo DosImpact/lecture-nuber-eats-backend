@@ -28,12 +28,18 @@ type Dish {
   options: [DishOption!]
 }
 
+type OrderItemOption {
+  name: String!
+  choice: String
+  extra: Int
+}
+
 type OrderItem {
   id: Float!
   createdAt: String!
   updatedAt: String!
   dish: Dish!
-  options: [DishOption!]
+  options: [OrderItemOption!]
 }
 
 type Order {
@@ -42,7 +48,7 @@ type Order {
   updatedAt: String!
   customer: User
   driver: User
-  restaurant: Restaurant!
+  restaurant: Restaurant
   items: [OrderItem!]!
   total: Float
   status: OrderStatus!
@@ -306,57 +312,17 @@ input DeleteDishInput {
 }
 
 input CreateOrderInput {
-  items: [OrderItemInputType!]!
   restaurantId: Int!
+  items: [CreateOrderItemInput!]!
 }
 
-input OrderItemInputType {
-  dish: DishInputType!
-  options: [DishOptionInputType!]
+input CreateOrderItemInput {
+  dishId: Int!
+  options: OrderItemOptionInputType
 }
 
-input DishInputType {
+input OrderItemOptionInputType {
   name: String!
-  price: Int!
-  photo: String
-  description: String!
-  restaurant: RestaurantInputType!
-  options: [DishOptionInputType!]
-}
-
-input RestaurantInputType {
-  id: Float!
-  name: String!
-  coverImg: String!
-  address: String = "주소를 입력해주세요"
-  category: CategoryInputType
-  owner: UserInputType
-  menu: [DishInputType!]!
-  orders: [OrderInputType!]!
-}
-
-input CategoryInputType {
-  name: String!
-  coverImg: String
-  slug: String!
-  restaurants: [RestaurantInputType!]!
-}
-
-input UserInputType {
-  email: String!
-  password: String!
-  role: UserRole!
-  verified: Boolean!
-  restaurant: [RestaurantInputType!]
-  orders: [OrderInputType!]!
-  rides: [OrderInputType!]!
-}
-
-input OrderInputType {
-  customer: UserInputType
-  driver: UserInputType
-  restaurant: RestaurantInputType!
-  items: [OrderItemInputType!]!
-  total: Float
-  status: OrderStatus!
+  choice: String
+  extra: Int
 }
