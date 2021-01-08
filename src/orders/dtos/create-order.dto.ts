@@ -11,6 +11,8 @@ class CreateOrderItemInput {
   options?: OrderItemOption[];
 }
 
+// 어느 레스토랑의, 메뉴를 시켰는가 ( 복수개의 메뉴 )
+// 그 메뉴의 id 와 옵션값은 ?
 @InputType()
 export class CreateOrderInput {
   @Field(type => Int)
