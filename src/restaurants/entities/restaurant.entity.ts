@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Order } from 'src/orders/entities/order.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -37,10 +37,14 @@ export class Restaurant extends CoreEntity {
   @IsString()
   coverImg: string;
 
-  @Column()
-  @Field(type => String, { defaultValue: '주소를 입력해주세요' })
-  @IsString()
-  address: string;
+  @Column({ nullable: true }) //1. typeorm migration - null true
+  @Field(type => String, {
+    nullable: true,
+    defaultValue: '주소를 입력해주세요',
+  }) // .2 graphql playground input null true
+  @IsString() // 3. class-validator : class 생성시 string type, ? type check
+  @IsOptional() // 유효성 pipe에서 - 애러 나오게 가능함. 혹은
+  address?: string; // 4. typescript compiler error
 
   // @Column()
   // @Field(type => String)
