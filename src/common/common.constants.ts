@@ -1,1 +1,2 @@
+// @Inject key 값 정의
 export const CONFIG_OPTIONS = 'CONFIG_OPTIONS';

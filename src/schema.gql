@@ -103,6 +103,17 @@ enum UserRole {
   Delivery
 }
 
+type UserProfileOutput {
+  error: String
+  ok: Boolean!
+  user: User
+}
+
+type VerfiyEmailOutput {
+  error: String
+  ok: Boolean!
+}
+
 type CreateAccountOutput {
   error: String
   ok: Boolean!
@@ -117,17 +128,6 @@ type LoginOutput {
   error: String
   ok: Boolean!
   token: String
-}
-
-type UserProfileOutput {
-  error: String
-  ok: Boolean!
-  user: User
-}
-
-type VerfiyEmailOutput {
-  error: String
-  ok: Boolean!
 }
 
 type AllCategoriesOutput {

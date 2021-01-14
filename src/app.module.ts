@@ -52,11 +52,15 @@ import { OrderItem } from './orders/entities/order-item.entity';
       installSubscriptionHandlers: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'), //true
       context: ({ req, connection }) => {
-        if (req) {
-          return { user: req['user'] };
-        } else {
-          console.log(connection);
-        }
+        const TOKEN_KEY = 'x-jwt';
+        return {
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+        };
+        // if (req) {
+        //   return { user: req['user'] };
+        // } else {
+        //   console.log(connection);
+        // }
       },
     }),
     TypeOrmModule.forRoot({
@@ -95,13 +99,17 @@ import { OrderItem } from './orders/entities/order-item.entity';
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleWare).forRoutes({
-      // path:"/graphql",
-      // method:RequestMethod.POST
-      path: '/graphql',
-      method: RequestMethod.ALL,
-    });
-  }
-}
+export class AppModule {}
+
+// auth.guard에서 jwt 해결
+
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(JwtMiddleWare).forRoutes({
+//       // path:"/graphql",
+//       // method:RequestMethod.POST
+//       path: '/graphql',
+//       method: RequestMethod.ALL,
+//     });
+//   }
+// }
