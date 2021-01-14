@@ -7,12 +7,16 @@ import { Order } from './entities/order.entity';
 import { OrderService } from './orders.service';
 
 import { PubSub } from 'graphql-subscriptions';
-
-const pubsub = new PubSub();
+import { Inject } from '@nestjs/common';
+import { PUB_SUB } from 'src/common/common.constants';
 
 @Resolver(of => Order)
 export class OrderResolver {
-  constructor(private readonly ordersService: OrderService) {}
+  constructor(
+    private readonly ordersService: OrderService,
+    @Inject(PUB_SUB)
+    private readonly pubsub: PubSub,
+  ) {}
 
   @Mutation(returns => CreateOrderOutput)
   @Role(['Client'])
@@ -26,7 +30,7 @@ export class OrderResolver {
 
   @Mutation(returns => Boolean)
   potatoReady() {
-    pubsub.publish('hotPotatos', {
+    this.pubsub.publish('hotPotatos', {
       // 1. key 이름이 동일
       readyPotato: 'YOur potato is ready. love you.', // payload는 key 이름이 subscription 함수 이름 동일
     });
@@ -36,6 +40,6 @@ export class OrderResolver {
   @Subscription(returns => String)
   @Role(['Any'])
   readyPotato() {
-    return pubsub.asyncIterator('hotPotatos');
+    return this.pubsub.asyncIterator('hotPotatos');
   }
 }
