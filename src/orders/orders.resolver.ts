@@ -15,7 +15,7 @@ export class OrderResolver {
   constructor(
     private readonly ordersService: OrderService,
     @Inject(PUB_SUB)
-    private readonly pubsub: PubSub,
+    private readonly pubSub: PubSub,
   ) {}
 
   @Mutation(returns => CreateOrderOutput)
@@ -29,17 +29,51 @@ export class OrderResolver {
   }
 
   @Mutation(returns => Boolean)
-  potatoReady() {
-    this.pubsub.publish('hotPotatos', {
-      // 1. key 이름이 동일
-      readyPotato: 'YOur potato is ready. love you.', // payload는 key 이름이 subscription 함수 이름 동일
+  async potatoReady(@Args('potatoId') potatoId: number) {
+    await this.pubSub.publish('hotPotatos', {
+      readyPotato: potatoId,
     });
     return true;
   }
-
-  @Subscription(returns => String)
+  @Subscription(returns => String, {
+    filter: ({ readyPotato }, { potatoId }) => {
+      return readyPotato === potatoId;
+    },
+    resolve: ({ readyPotato }) =>
+      `Your potato with the id ${readyPotato} is ready!`,
+  })
   @Role(['Any'])
-  readyPotato() {
-    return this.pubsub.asyncIterator('hotPotatos');
+  readyPotato(@Args('potatoId') potatoId: number) {
+    return this.pubSub.asyncIterator('hotPotatos');
+  }
+
+  // 뮤테이션으로 pubsub에 publish
+  @Mutation(returns => Boolean)
+  pizzaOrder(@Args('pizzaId') pizzaId: number, @Args('ment') ment: string) {
+    this.pubSub.publish('pizza', {
+      // 누군가 pizza라는 key로 listen중이라면 그들에게 payload를 날린다.
+      pizzaOrderChange: pizzaId,
+      ment,
+    });
+    return true;
+  }
+  // subscription - pubsub - subscribe == asyncInterator
+  @Subscription(returns => String, {
+    filter: (payload, variables, context) => {
+      // 상대의 payload, 나의 variables, context
+      console.log(payload, variables, context);
+      const { pizzaOrderChange } = payload;
+      const { listenPizzaId } = variables;
+      return pizzaOrderChange === listenPizzaId; // filter 이용해서 나의 pizzaId만 선별해서 듣는다.
+    },
+    resolve: (payload, args) => {
+      // filter 통과시 returns 값을 resolve
+      const { pizzaOrderChange, ment } = payload;
+      const { listenPizzaId } = args;
+      return `pizzaOrder income [${pizzaOrderChange}] ment [${ment}] `; //payload의 id,ment를 적어서 보내주었다.
+    },
+  })
+  pizzaOrderChange(@Args('listenPizzaId') listenPizzaId: number) {
+    return this.pubSub.asyncIterator('pizza'); // sub 실행중 . key는 pizze로
   }
 }

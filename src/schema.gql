@@ -239,6 +239,7 @@ type Mutation {
   deleteDish(input: DeleteDishInput!): DeleteDishOutput!
   createOrder(input: CreateOrderInput!): CreateOrderOutput!
   potatoReady: Boolean!
+  pizzaOrder(ment: String!, pizzaId: Float!): Boolean!
 }
 
 input CreateAccountInput {
@@ -328,4 +329,5 @@ input OrderItemOptionInputType {
 
 type Subscription {
   readyPotato: String!
+  pizzaOrderChange(listenPizzaId: Float!): String!
 }
