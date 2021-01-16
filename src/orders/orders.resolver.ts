@@ -18,6 +18,7 @@ import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 import { OrderUpdatesInput } from './dtos/order-update-dto';
+import { TakeOrderInput, TakeOrderOutput } from './dtos/take-order.dto';
 
 @Resolver(of => Order)
 export class OrderResolver {
@@ -83,39 +84,37 @@ export class OrderResolver {
   }
 
   // 고객은 모든 요리 정보가 업데이트 되는 과정을 볼 수 있어야한다. ( 모든 사람이 하나의 주문에대해 update정보를 리슨가능 )
-  @Subscription(returns => Order)
+  // 특정 주문만 listen + 관련된 (오너,고객,배달원) 만 listen
+  @Subscription(returns => Order, {
+    filter: (
+      { orderUpdates: order }: { orderUpdates: Order },
+      { input }: { input: OrderUpdatesInput },
+      { user }: { user: User },
+    ) => {
+      console.log(order, user.id, input);
+
+      if (
+        order.driverId !== user.id &&
+        order.customerId !== user.id &&
+        order.restaurant.ownerId !== user.id
+      ) {
+        return false;
+      }
+      return order.id === input.id;
+    },
+  })
   @Role(['Any'])
   orderUpdates(@Args('input') orderUpdatesInput: OrderUpdatesInput) {
     return this.pubSub.asyncIterator(NEW_ORDER_UPDATE);
   }
 
-  // // 뮤테이션으로 pubsub에 publish
-  // @Mutation(returns => Boolean)
-  // pizzaOrder(@Args('pizzaId') pizzaId: number, @Args('ment') ment: string) {
-  //   this.pubSub.publish('pizza', {
-  //     // 누군가 pizza라는 key로 listen중이라면 그들에게 payload를 날린다.
-  //     pizzaOrderChange: pizzaId,
-  //     ment,
-  //   });
-  //   return true;
-  // }
-  // // subscription - pubsub - subscribe == asyncInterator
-  // @Subscription(returns => String, {
-  //   filter: (payload, variables, context) => {
-  //     // 상대의 payload, 나의 variables, context
-  //     console.log(payload, variables, context);
-  //     const { pizzaOrderChange } = payload;
-  //     const { listenPizzaId } = variables;
-  //     return pizzaOrderChange === listenPizzaId; // filter 이용해서 나의 pizzaId만 선별해서 듣는다.
-  //   },
-  //   resolve: (payload, args) => {
-  //     // filter 통과시 returns 값을 resolve
-  //     const { pizzaOrderChange, ment } = payload;
-  //     const { listenPizzaId } = args;
-  //     return `pizzaOrder income [${pizzaOrderChange}] ment [${ment}] `; //payload의 id,ment를 적어서 보내주었다.
-  //   },
-  // })
-  // pizzaOrderChange(@Args('listenPizzaId') listenPizzaId: number) {
-  //   return this.pubSub.asyncIterator('pizza'); // sub 실행중 . key는 pizze로
-  // }
+  // 배달원이 해당 주문을 take
+  @Mutation(returns => TakeOrderOutput)
+  @Role(['Delivery'])
+  takeOrder(
+    @AuthUser() driver: User,
+    @Args('input') takeOrderInput: TakeOrderInput,
+  ): Promise<TakeOrderOutput> {
+    return this.ordersService.takeOrder(driver, takeOrderInput);
+  }
 }

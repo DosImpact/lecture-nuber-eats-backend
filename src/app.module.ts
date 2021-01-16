@@ -72,7 +72,7 @@ import { CommonModule } from './common/common.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod', // db연결과 동시에 model migration 실행, 아래 entities가 들어간다.(!prod일때)
-      logging: true,
+      logging: false,
       entities: [
         User,
         Verification,
