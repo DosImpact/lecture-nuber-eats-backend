@@ -58,6 +58,7 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
+  // 주문이 create 되면 owner는 이 사실을 알아야한다.
   @Subscription(returns => Order, {
     filter: ({ pendingOrders: { ownerId } }, _, { user }) => {
       return ownerId === user.id;

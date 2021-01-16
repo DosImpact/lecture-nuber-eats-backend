@@ -44,6 +44,7 @@ export class OrderService {
       const orderItems: OrderItem[] = [];
       for (const item of items) {
         const dish = await this.dishes.findOne(item.dishId);
+        console.log('dish : ', dish);
         if (!dish) {
           return {
             ok: false,
