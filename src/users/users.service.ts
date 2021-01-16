@@ -85,7 +85,10 @@ export class UsersService {
   }
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOneOrFail({ where: { id } });
+      const user = await this.users.findOneOrFail({
+        where: { id },
+        relations: ['restaurant', 'restaurant.menu', 'orders', 'rides'],
+      });
       return {
         ok: true,
         user,

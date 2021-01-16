@@ -19,7 +19,7 @@ export class DishChoice {
 
 @InputType('DishOptionInputType', { isAbstract: true })
 @ObjectType()
-export class DishOption extends CoreEntity {
+export class DishOption {
   // 이름 옵션명들 엑스트라가격
   @Field(type => String)
   name: string; // 하와이안 피자.

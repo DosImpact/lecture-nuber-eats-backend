@@ -8,9 +8,6 @@ type DishChoice {
 }
 
 type DishOption {
-  id: Float!
-  createdAt: String!
-  updatedAt: String!
   name: String!
   choices: [DishChoice!]
   extra: Int
