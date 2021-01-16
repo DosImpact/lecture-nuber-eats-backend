@@ -12,10 +12,12 @@ import {
   PUB_SUB,
   NEW_PENDING_ORDER,
   NEW_COOKED_ORDER,
+  NEW_ORDER_UPDATE,
 } from 'src/common/common.constants';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
+import { OrderUpdatesInput } from './dtos/order-update-dto';
 
 @Resolver(of => Order)
 export class OrderResolver {
@@ -78,6 +80,13 @@ export class OrderResolver {
   @Role(['Delivery'])
   cookedOrders() {
     return this.pubSub.asyncIterator(NEW_COOKED_ORDER);
+  }
+
+  // 고객은 모든 요리 정보가 업데이트 되는 과정을 볼 수 있어야한다. ( 모든 사람이 하나의 주문에대해 update정보를 리슨가능 )
+  @Subscription(returns => Order)
+  @Role(['Any'])
+  orderUpdates(@Args('input') orderUpdatesInput: OrderUpdatesInput) {
+    return this.pubSub.asyncIterator(NEW_ORDER_UPDATE);
   }
 
   // // 뮤테이션으로 pubsub에 publish
