@@ -1,5 +1,10 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Field, ObjectType } from '@nestjs/graphql';
+import {
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 /**
  * id , createdAt, updatedAt ( 모든 entity의 디폴트)
@@ -7,15 +12,15 @@ import { CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } fr
 @ObjectType()
 @Entity()
 export class CoreEntity {
-    @PrimaryGeneratedColumn()
-    @Field(type => Number)
-    id: number;
+  @PrimaryGeneratedColumn()
+  @Field(type => Number)
+  id: number;
 
-    @CreateDateColumn()
-    @Field(type => String)
-    createdAt: string
+  @CreateDateColumn()
+  @Field(type => String)
+  createdAt: string;
 
-    @UpdateDateColumn()
-    @Field(type => String)
-    updatedAt: string
+  @UpdateDateColumn()
+  @Field(type => String)
+  updatedAt: string;
 }

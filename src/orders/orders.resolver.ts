@@ -8,7 +8,7 @@ import { OrderService } from './orders.service';
 
 import { PubSub } from 'graphql-subscriptions';
 import { Inject } from '@nestjs/common';
-import { PUB_SUB } from 'src/common/common.constants';
+import { PUB_SUB, NEW_PENDING_ORDER } from 'src/common/common.constants';
 
 @Resolver(of => Order)
 export class OrderResolver {
@@ -28,52 +28,44 @@ export class OrderResolver {
     return this.ordersService.crateOrder(customer, createOrderInput);
   }
 
-  @Mutation(returns => Boolean)
-  async potatoReady(@Args('potatoId') potatoId: number) {
-    await this.pubSub.publish('hotPotatos', {
-      readyPotato: potatoId,
-    });
-    return true;
-  }
-  @Subscription(returns => String, {
-    filter: ({ readyPotato }, { potatoId }) => {
-      return readyPotato === potatoId;
+  @Subscription(returns => Order, {
+    filter: (payload, _, context) => {
+      console.log(payload, _, context);
+      return true;
     },
-    resolve: ({ readyPotato }) =>
-      `Your potato with the id ${readyPotato} is ready!`,
   })
-  @Role(['Any'])
-  readyPotato(@Args('potatoId') potatoId: number) {
-    return this.pubSub.asyncIterator('hotPotatos');
+  @Role(['Owner'])
+  pedingOrder() {
+    return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
   }
 
-  // 뮤테이션으로 pubsub에 publish
-  @Mutation(returns => Boolean)
-  pizzaOrder(@Args('pizzaId') pizzaId: number, @Args('ment') ment: string) {
-    this.pubSub.publish('pizza', {
-      // 누군가 pizza라는 key로 listen중이라면 그들에게 payload를 날린다.
-      pizzaOrderChange: pizzaId,
-      ment,
-    });
-    return true;
-  }
-  // subscription - pubsub - subscribe == asyncInterator
-  @Subscription(returns => String, {
-    filter: (payload, variables, context) => {
-      // 상대의 payload, 나의 variables, context
-      console.log(payload, variables, context);
-      const { pizzaOrderChange } = payload;
-      const { listenPizzaId } = variables;
-      return pizzaOrderChange === listenPizzaId; // filter 이용해서 나의 pizzaId만 선별해서 듣는다.
-    },
-    resolve: (payload, args) => {
-      // filter 통과시 returns 값을 resolve
-      const { pizzaOrderChange, ment } = payload;
-      const { listenPizzaId } = args;
-      return `pizzaOrder income [${pizzaOrderChange}] ment [${ment}] `; //payload의 id,ment를 적어서 보내주었다.
-    },
-  })
-  pizzaOrderChange(@Args('listenPizzaId') listenPizzaId: number) {
-    return this.pubSub.asyncIterator('pizza'); // sub 실행중 . key는 pizze로
-  }
+  // // 뮤테이션으로 pubsub에 publish
+  // @Mutation(returns => Boolean)
+  // pizzaOrder(@Args('pizzaId') pizzaId: number, @Args('ment') ment: string) {
+  //   this.pubSub.publish('pizza', {
+  //     // 누군가 pizza라는 key로 listen중이라면 그들에게 payload를 날린다.
+  //     pizzaOrderChange: pizzaId,
+  //     ment,
+  //   });
+  //   return true;
+  // }
+  // // subscription - pubsub - subscribe == asyncInterator
+  // @Subscription(returns => String, {
+  //   filter: (payload, variables, context) => {
+  //     // 상대의 payload, 나의 variables, context
+  //     console.log(payload, variables, context);
+  //     const { pizzaOrderChange } = payload;
+  //     const { listenPizzaId } = variables;
+  //     return pizzaOrderChange === listenPizzaId; // filter 이용해서 나의 pizzaId만 선별해서 듣는다.
+  //   },
+  //   resolve: (payload, args) => {
+  //     // filter 통과시 returns 값을 resolve
+  //     const { pizzaOrderChange, ment } = payload;
+  //     const { listenPizzaId } = args;
+  //     return `pizzaOrder income [${pizzaOrderChange}] ment [${ment}] `; //payload의 id,ment를 적어서 보내주었다.
+  //   },
+  // })
+  // pizzaOrderChange(@Args('listenPizzaId') listenPizzaId: number) {
+  //   return this.pubSub.asyncIterator('pizza'); // sub 실행중 . key는 pizze로
+  // }
 }

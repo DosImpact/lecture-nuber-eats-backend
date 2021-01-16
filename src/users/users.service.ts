@@ -47,7 +47,8 @@ export class UsersService {
         const verification = await this.verifications.save(
           this.verifications.create({ user }),
         );
-        this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
+        // 🚀
+        // this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
 
         return { ok: true };
       }
@@ -112,14 +113,15 @@ export class UsersService {
         user.verified = false;
         // error : 기존의 verficiation이 제거되고 아래의 새로운 verification으로 대처되어야함.
         const ver = await this.verifications.findOne(
-          { user },
+          { user: { id: user.id } },
           { relations: ['user'] },
         );
-        await this.verifications.delete(ver.id);
-        const verification = await this.verifications.save(
-          this.verifications.create({ user }),
-        );
-        this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
+        if (ver) {
+          await this.verifications.delete(ver.id);
+        }
+        await this.verifications.save(this.verifications.create({ user }));
+        //🚀
+        // this.mailService.sendVerificationEmail(user.email, verification.code); // 비동기 처리
       }
       if (password) user.password = password;
 

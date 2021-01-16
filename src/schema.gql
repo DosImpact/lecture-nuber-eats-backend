@@ -56,6 +56,7 @@ type Order {
 enum OrderStatus {
   Pending
   Cooking
+  Cooked
   PickedUp
   Delivered
 }
@@ -230,7 +231,7 @@ type Mutation {
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
   login(input: LoginInput!): LoginOutput!
   editProfile(input: EditProfileInput!): EditProfileOutput!
-  verfifyEmail(input: VerifyEmailInput!): VerfiyEmailOutput!
+  verifyEmail(input: VerifyEmailInput!): VerfiyEmailOutput!
   createRestaurant(input: CreateRestaurantInput!): CreateRestauranOutput!
   editRestaurant(input: EditRestaurantInput!): EditRestaurantOutput!
   deleteRestaurant(input: DeleteRestaurantInput!): DeleteRestaurantOutput!
@@ -238,8 +239,6 @@ type Mutation {
   editDish(input: EditDishInput!): EditDishOutput!
   deleteDish(input: DeleteDishInput!): DeleteDishOutput!
   createOrder(input: CreateOrderInput!): CreateOrderOutput!
-  potatoReady: Boolean!
-  pizzaOrder(ment: String!, pizzaId: Float!): Boolean!
 }
 
 input CreateAccountInput {
@@ -328,6 +327,5 @@ input OrderItemOptionInputType {
 }
 
 type Subscription {
-  readyPotato: String!
-  pizzaOrderChange(listenPizzaId: Float!): String!
+  pedingOrder: Order!
 }
