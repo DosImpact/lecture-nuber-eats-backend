@@ -8,7 +8,11 @@ import { OrderService } from './orders.service';
 
 import { PubSub } from 'graphql-subscriptions';
 import { Inject } from '@nestjs/common';
-import { PUB_SUB, NEW_PENDING_ORDER } from 'src/common/common.constants';
+import {
+  PUB_SUB,
+  NEW_PENDING_ORDER,
+  NEW_COOKED_ORDER,
+} from 'src/common/common.constants';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
@@ -68,6 +72,12 @@ export class OrderResolver {
   @Role(['Owner'])
   pendingOrders() {
     return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
+  }
+  // 음식이 update (요리완료) delivery는 이 사실을 알아야 한다.( 모든 배달원이 알아야함 )
+  @Subscription(returns => Order)
+  @Role(['Delivery'])
+  cookedOrders() {
+    return this.pubSub.asyncIterator(NEW_COOKED_ORDER);
   }
 
   // // 뮤테이션으로 pubsub에 publish
