@@ -11,10 +11,14 @@ export class MailModule {
       module: MailModule,
       providers: [
         {
-          provide: CONFIG_OPTIONS,
+          provide: CONFIG_OPTIONS, // value 의존성 제공
           useValue: options,
         },
-        MailService,
+        MailService, // class 모듈은 아래 내용을 축약해서 사용 가능
+        // {
+        //   provide: MailService,
+        //   useClass: MailService,
+        // },
       ],
       exports: [MailService],
     };
