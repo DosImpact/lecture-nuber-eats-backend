@@ -1,4 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import {
+  Cron,
+  CronExpression,
+  Interval,
+  SchedulerRegistry,
+} from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -17,6 +23,7 @@ export class PaymentService {
     private readonly payments: Repository<Payment>,
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
+    private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async createPayment(
@@ -79,5 +86,24 @@ export class PaymentService {
         error: 'cannot getPayments',
       };
     }
+  }
+
+  // @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron('10 * * * * *') // 매 10초가 되면 실행
+  sayHiEverySec() {
+    console.log('Cron EVERY_10_SECONDS');
+  }
+
+  @Interval(10000) // 서버 시작후 10초 마다 실행
+  sayHiFiveSec() {
+    console.log('Interval sayHiFiveSec');
+  }
+
+  @Cron('*/10 * * * * *', { name: 'notification' }) // 매번 자동으로 10초마다 실행
+  notification() {
+    console.log(' Cron notification');
+    const job = this.schedulerRegistry.getCronJob('notification'); // 하지만 그 실행때 cronjob 중지
+    job.stop();
+    console.log(job.lastDate());
   }
 }

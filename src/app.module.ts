@@ -26,6 +26,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
 import { CommonModule } from './common/common.module';
 import { PaymentModule } from './payment/payment.module';
 import { Payment } from './payment/entities/payment.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -87,7 +88,7 @@ import { Payment } from './payment/entities/payment.entity';
         Payment,
       ],
     }),
-
+    ScheduleModule.forRoot(),
     JwtModule.forRoot({
       privateKey: process.env.SECRET_KEY,
     }),
