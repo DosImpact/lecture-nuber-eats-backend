@@ -219,6 +219,7 @@ export class RestaurantsService {
         where: { category },
         take: 25,
         skip: (page - 1) * 25,
+        order: { isPromoted: 'DESC' },
       });
       //  category.restaurants 은  없다. restaurants 은 밖의 필드로 뺌.
       // category.restaurants = restaurants;
@@ -250,6 +251,7 @@ export class RestaurantsService {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
         skip: (page - 1) * 25,
         take: 25,
+        order: { isPromoted: 'DESC' },
       });
 
       return {

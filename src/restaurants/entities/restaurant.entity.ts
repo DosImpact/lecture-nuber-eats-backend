@@ -11,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { pathToFileURL } from 'url';
 import { Category } from './category.entity';
 import { Dish } from './dish.entity';
 
@@ -50,6 +51,16 @@ export class Restaurant extends CoreEntity {
   // @Field(type => String)
   // @IsString()
   // ownerName: string;
+
+  @Column({ default: false })
+  @Field(type => Boolean)
+  isPromoted: boolean;
+
+  @Column({ nullable: true })
+  @Field(type => Date, { nullable: true })
+  PromotionUnti?: Date;
+
+  // -------- relations --------
 
   // 카테고리는 여러 레스토랑은 갖는다.  ( many ) [ me ]
   // To

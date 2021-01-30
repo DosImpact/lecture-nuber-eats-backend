@@ -8,7 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import {
   CreatePaymentInput,
   CreatePaymentOutput,
@@ -61,6 +61,11 @@ export class PaymentService {
           restaurant,
         }),
       );
+      const date = restaurant.PromotionUnti || new Date();
+      date.setDate(date.getDate() + 7);
+      restaurant.isPromoted = true;
+      restaurant.PromotionUnti = date;
+      await this.restaurants.save([restaurant]);
       return {
         ok: true,
       };
@@ -88,22 +93,44 @@ export class PaymentService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_10_SECONDS)
-  @Cron('10 * * * * *') // 매 10초가 되면 실행
-  sayHiEverySec() {
-    console.log('Cron EVERY_10_SECONDS');
+  @Cron(CronExpression.EVERY_12_HOURS)
+  async checkPromotionEnd() {
+    const restaurants = await this.restaurants.find({
+      where: {
+        isPromoted: true,
+        PromotionUnti: LessThan(new Date()),
+      },
+    });
+    if (restaurants.length > 0) {
+      console.log(`restaurant [${restaurants.length}개] 프로모션 종료`);
+      await Promise.all(
+        restaurants.map(async restaurant => {
+          restaurant.PromotionUnti = null;
+          restaurant.isPromoted = false;
+          await this.restaurants.save(restaurant);
+        }),
+      );
+    }
+
+    // console.log(restaurants);
   }
 
-  @Interval(10000) // 서버 시작후 10초 마다 실행
-  sayHiFiveSec() {
-    console.log('Interval sayHiFiveSec');
-  }
+  // // @Cron(CronExpression.EVERY_10_SECONDS)
+  // @Cron('10 * * * * *') // 매 10초가 되면 실행
+  // sayHiEverySec() {
+  //   console.log('Cron EVERY_10_SECONDS');
+  // }
 
-  @Cron('*/10 * * * * *', { name: 'notification' }) // 매번 자동으로 10초마다 실행
-  notification() {
-    console.log(' Cron notification');
-    const job = this.schedulerRegistry.getCronJob('notification'); // 하지만 그 실행때 cronjob 중지
-    job.stop();
-    console.log(job.lastDate());
-  }
+  // @Interval(10000) // 서버 시작후 10초 마다 실행
+  // sayHiFiveSec() {
+  //   console.log('Interval sayHiFiveSec');
+  // }
+
+  // @Cron('*/10 * * * * *', { name: 'notification' }) // 매번 자동으로 10초마다 실행
+  // notification() {
+  //   console.log(' Cron notification');
+  //   const job = this.schedulerRegistry.getCronJob('notification'); // 하지만 그 실행때 cronjob 중지
+  //   job.stop();
+  //   console.log(job.lastDate());
+  // }
 }
