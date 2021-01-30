@@ -89,4 +89,6 @@ export class Restaurant extends CoreEntity {
     order => order.restaurant,
   )
   orders: Order[];
+
+  // 여러가지 payment를 가지고있으나 명시 X
 }

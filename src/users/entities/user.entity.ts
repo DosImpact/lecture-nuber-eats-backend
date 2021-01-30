@@ -11,6 +11,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { IsEmail, IsEnum } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { Order } from 'src/orders/entities/order.entity';
+import { Payment } from 'src/payment/entities/payment.entity';
 
 /**
  * id , createdAt, updatedAt ( 모든 entity의 디폴트)
@@ -74,6 +75,14 @@ export class User extends CoreEntity {
     order => order.driver,
   )
   rides: Order[];
+
+  // 사용자는 여러개의 결제를 가지고 있다.
+  @Field(type => [Payment])
+  @OneToMany(
+    type => Payment,
+    payment => payment.user,
+  )
+  payment: Payment[];
 
   @BeforeInsert() // DB에 Save 할때 거치는 미들웨어같은 함수
   @BeforeUpdate()

@@ -121,3 +121,21 @@ U :
 
 D :
 ```
+
+# testuser
+
+```js
+Owner
+{
+  "x-jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTYxMDc4NTk3N30.jEy_zA3zlEHDdXIWuYBmFUqzC4FL0g0t24D46oNyH_s"
+}
+Delivery
+{
+  "x-jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImlhdCI6MTYxMDc4NTkzNX0.nopRHefGSR3USSS-V3FYvk7s-jUzWmy2p1iFD5By1Qo"
+}
+Client
+{
+	"x-jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTYxMDc4NTc2OH0.66jUInp0WOri8puA8NziFDVfQgeDmShb44gPSyZEDQ4"
+}
+
+```
